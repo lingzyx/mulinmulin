@@ -160,6 +160,25 @@
   table.settle-table tr:hover{filter:brightness(0.98);}
   table.settle-table select.status-select option[value="結案"]{color:var(--ok);}
   table.settle-table select.status-select option[value="退件"]{color:var(--warn);}
+
+  #addSuggestions{margin-top:8px; display:flex; flex-direction:column; gap:6px;}
+  .suggest-item{
+    display:flex; justify-content:space-between; align-items:center; gap:10px;
+    padding:9px 12px; border:1px solid var(--line); border-radius:5px; background:#fffefb; cursor:pointer;
+  }
+  .suggest-item:hover{border-color:var(--pine); background:var(--paper-deep);}
+  .suggest-item .s-main{min-width:0;}
+  .suggest-item .s-serial{color:var(--clay); font-size:11.5px; font-weight:500;}
+  .suggest-item .s-org{font-size:14px;}
+  .suggest-item .s-meta{font-size:11.5px; color:var(--ink-soft);}
+  .suggest-item .s-add{
+    flex-shrink:0; background:var(--pine); color:#fff; border:none; border-radius:4px;
+    padding:6px 12px; font-size:12.5px; cursor:pointer;
+  }
+  .remove-btn{
+    background:none; border:none; color:var(--ink-soft); cursor:pointer; font-size:14px; padding:2px 6px;
+  }
+  .remove-btn:hover{color:var(--warn);}
 </style>
 </head>
 <body>
@@ -171,6 +190,7 @@
 
 <nav id="tabs">
   <button data-tab="register" class="active">📄 核准文件建檔</button>
+  <button data-tab="records">📁 已建檔案件</button>
   <button data-tab="settle">🔍 核銷查詢登錄</button>
   <button data-tab="overview">📋 總覽 / 匯出</button>
   <button data-tab="settings">⚙️ 設定</button>
@@ -182,7 +202,7 @@
   <section id="tab-register">
     <div class="card">
       <h2>批次上傳核准公文（掃描 PDF）</h2>
-      <div class="hint">一次可選擇最多 10 件 PDF。系統會逐件辨識並自動建立案件，完成後請點「檢視修改」或到「總覽」核對日期、金額、統編與地址。</div>
+      <div class="hint">一次可選擇最多 10 件 PDF。系統會逐件辨識並自動建立案件，完成後請點「檢視修改」或到「已建檔案件」頁核對日期、金額、統編與地址。</div>
       <div class="file-drop" id="dropZone">
         點選或拖曳 PDF 檔案到這裡（最多 10 件）<br>
         <span id="fileName" style="color:var(--pine); font-weight:500;"></span>
@@ -195,6 +215,34 @@
         <button class="btn secondary" id="btnManual">✏️ 直接手動輸入</button>
       </div>
       <div id="extractStatus"></div>
+    </div>
+
+  </section>
+
+  <!-- ===================== 已建檔案件 TAB ===================== -->
+  <section id="tab-records" style="display:none;">
+    <div class="card">
+      <h2>已建檔案件 <span class="badge-count" id="recordsCount">0</span></h2>
+      <div class="hint">PDF 辨識完成、或手動輸入建檔後的案件資料都會列在這裡，可以搜尋、編輯或刪除。</div>
+      <div class="row">
+        <div style="flex:2"><label>搜尋（單位／序號／統編／活動名稱）</label><input type="text" id="recordsSearchInput" placeholder="例如：福德宮 / 115-007"></div>
+        <div style="display:flex; align-items:flex-end;">
+          <button class="btn secondary" id="btnManualRecords">✏️ 新增手動案件</button>
+        </div>
+      </div>
+      <div class="divider"></div>
+      <div style="overflow-x:auto;">
+        <table class="settle-table" id="recordsTable">
+          <thead><tr>
+            <th>序號</th><th>申請單位</th><th>統一編號</th><th>活動名稱</th><th>活動地點</th>
+            <th>活動時間(起)</th><th>活動時間(迄)</th><th>活動預算金額</th><th>自有款</th>
+            <th>核定補助金額</th><th>核准日期</th><th>負責人</th><th>連絡人</th><th>連絡電話</th>
+            <th>通訊地址</th><th>會址</th><th>操作</th>
+          </tr></thead>
+          <tbody id="recordsTableBody"></tbody>
+        </table>
+
+      </div>
     </div>
 
     <div class="card" id="formCard" style="display:none;">
@@ -247,6 +295,14 @@
   <!-- ===================== 核銷 TAB ===================== -->
   <section id="tab-settle" style="display:none;">
     <div class="card">
+      <h2>加入核銷案件</h2>
+      <div class="hint">協會辦完活動、送核銷文件來的時候，在這裡打單位名稱的關鍵字（不用打全名）快速找到案件，選取後才會出現在下面的核銷清單。</div>
+      <input type="text" id="addSearchInput" placeholder="例如：福德宮 / 人文 / 115-007" autocomplete="off">
+      <div id="addSuggestions"></div>
+      <div class="hint" id="notYetCount" style="margin-top:8px;"></div>
+    </div>
+
+    <div class="card">
       <h2>核銷總覽</h2>
       <div class="hint">直接在表格上登記核銷狀態，跟 Excel 一樣邊看邊改，改了就自動存檔。</div>
       <div class="stat-bar">
@@ -275,7 +331,7 @@
           <thead><tr>
             <th>序號</th><th>申請單位</th><th>核定金額</th><th>印花</th><th>報銷單號</th>
             <th>狀態</th><th>過帳日期</th><th>核銷金額</th>
-            <th>CGSS<br>核銷</th><th>所得稅<br>財產課</th><th>睦鄰<br>系統</th><th>備註</th>
+            <th>CGSS<br>核銷</th><th>所得稅<br>財產課</th><th>睦鄰<br>系統</th><th>備註</th><th></th>
           </tr></thead>
           <tbody id="settleTableBody"></tbody>
         </table>
@@ -351,10 +407,11 @@ document.querySelectorAll('#tabs button').forEach(btn=>{
   btn.addEventListener('click', ()=>{
     document.querySelectorAll('#tabs button').forEach(b=>b.classList.remove('active'));
     btn.classList.add('active');
-    ['register','settle','overview','settings'].forEach(t=>{
+    ['register','records','settle','overview','settings'].forEach(t=>{
       document.getElementById('tab-'+t).style.display = (t===btn.dataset.tab)?'block':'none';
     });
     if(btn.dataset.tab==='overview') renderOverview();
+    if(btn.dataset.tab==='records') renderRecordsTable();
     if(btn.dataset.tab==='settle') renderSettleTable();
     if(btn.dataset.tab==='settings') document.getElementById('settingsCount').textContent = cases.length;
   });
@@ -503,6 +560,7 @@ function renderBatchQueue(){
 function openCaseForEdit(serial){
   const record = cases.find(item=>item.serial === serial);
   if(!record) return;
+  document.querySelector('#tabs button[data-tab="records"]').click();
   fillForm(record, record.serial);
   document.getElementById('formCard').style.display = 'block';
   setStatus('saveStatus','這筆案件已建檔，修改後按「儲存案件」即可更新。','info');
@@ -696,12 +754,15 @@ btnExtract.addEventListener('click', async ()=>{
   setStatus('extractStatus', summary, failedCount ? 'err' : 'ok');
 });
 
-document.getElementById('btnManual').addEventListener('click', ()=>{
+function openManualEntryForm(){
+  document.querySelector('#tabs button[data-tab="records"]').click();
   clearForm();
   document.getElementById('formCard').style.display='block';
   setStatus('saveStatus','',null);
   document.getElementById('formCard').scrollIntoView({behavior:'smooth'});
-});
+}
+document.getElementById('btnManual').addEventListener('click', openManualEntryForm);
+document.getElementById('btnManualRecords').addEventListener('click', openManualEntryForm);
 
 function fillForm(d, serialOverride=''){
   currentEditSerial = serialOverride || null;
@@ -801,6 +862,7 @@ document.getElementById('btnSaveCase').addEventListener('click', ()=>{
     if(job.serial === originalSerial){ job.serial = rec.serial; job.result = rec; }
   });
   renderBatchQueue();
+  renderRecordsTable();
   setStatus('saveStatus','已儲存 ✓','ok');
   setTimeout(()=>{
     document.getElementById('formCard').style.display='none';
@@ -811,19 +873,56 @@ document.getElementById('btnSaveCase').addEventListener('click', ()=>{
 // ---------- 核銷 Tab ----------
 const searchInput = document.getElementById('searchInput');
 const statusFilter = document.getElementById('statusFilter');
+const addSearchInput = document.getElementById('addSearchInput');
 searchInput.addEventListener('input', renderSettleTable);
 statusFilter.addEventListener('change', renderSettleTable);
+addSearchInput.addEventListener('input', renderAddSuggestions);
+
+function isStarted(c){ return c.settlement !== null && c.settlement !== undefined; }
+
+function renderAddSuggestions(){
+  const q = addSearchInput.value.trim();
+  const box = document.getElementById('addSuggestions');
+  const notYet = cases.filter(c=>!isStarted(c));
+  document.getElementById('notYetCount').textContent = `目前有 ${notYet.length} 件已建檔、尚未加入核銷清單`;
+  if(!q){ box.innerHTML=''; return; }
+  const matches = notYet.filter(c=>
+    (c.orgName||'').includes(q) || (c.serial||'').includes(q) || (String(c.taxId)||'').includes(q) || (c.activityName||'').includes(q)
+  ).slice(0,8);
+  if(!matches.length){ box.innerHTML = '<div class="hint">找不到符合的未核銷案件（可能已經加入清單了，或還沒建檔）</div>'; return; }
+  box.innerHTML = matches.map(c=>`
+    <div class="suggest-item" data-serial="${escAttr(c.serial)}">
+      <div class="s-main">
+        <div class="s-serial">${escHtml(c.serial)}</div>
+        <div class="s-org">${escHtml(c.orgName)}</div>
+        <div class="s-meta">${escHtml(c.activityName||'')} · 核定 ${c.approvedAmount?Number(c.approvedAmount).toLocaleString():'—'} 元</div>
+      </div>
+      <button class="s-add" type="button">＋ 加入核銷</button>
+    </div>`).join('');
+  box.querySelectorAll('.suggest-item').forEach(el=>{
+    el.addEventListener('click', ()=>{
+      const idx = cases.findIndex(c=>c.serial===el.dataset.serial);
+      if(idx<0) return;
+      cases[idx].settlement = {};
+      saveCases(cases);
+      addSearchInput.value = '';
+      box.innerHTML = '';
+      renderAddSuggestions();
+      renderSettleTable();
+    });
+  });
+}
 
 function fmtMoney(n){
   const v = parseFloat(n);
   return isNaN(v) ? 0 : v;
 }
 
-function renderStats(){
-  const total = cases.length;
-  const done = cases.filter(c=>c.settlement && c.settlement.status==='結案').length;
-  const totalApproved = cases.reduce((sum,c)=>sum+fmtMoney(c.approvedAmount),0);
-  const totalSettled = cases.reduce((sum,c)=>sum+fmtMoney(c.settlement&&c.settlement.settleAmount),0);
+function renderStats(list){
+  const total = list.length;
+  const done = list.filter(c=>c.settlement && c.settlement.status==='結案').length;
+  const totalApproved = list.reduce((sum,c)=>sum+fmtMoney(c.approvedAmount),0);
+  const totalSettled = list.reduce((sum,c)=>sum+fmtMoney(c.settlement&&c.settlement.settleAmount),0);
   document.getElementById('stat_total').textContent = total;
   document.getElementById('stat_done').textContent = done;
   document.getElementById('stat_approved').textContent = totalApproved.toLocaleString();
@@ -838,17 +937,22 @@ function rowClassFor(status){
 }
 
 function renderSettleTable(){
-  renderStats();
+  renderAddSuggestions();
   const q = searchInput.value.trim();
   const statusQ = statusFilter.value;
   const tbody = document.getElementById('settleTableBody');
-  let list = cases.filter(c=>
+  const started = cases.filter(isStarted);
+  renderStats(started);
+  let list = started.filter(c=>
     !q || (c.orgName||'').includes(q) || (c.serial||'').includes(q) || (String(c.taxId)||'').includes(q) || (c.activityName||'').includes(q)
   );
   if(statusQ==='__blank'){ list = list.filter(c=>!c.settlement || !c.settlement.status); }
   else if(statusQ){ list = list.filter(c=>c.settlement && c.settlement.status===statusQ); }
 
-  if(!list.length){ tbody.innerHTML = '<tr><td colspan="12" class="hint" style="padding:16px;">找不到符合條件的案件</td></tr>'; return; }
+  if(!list.length){
+    tbody.innerHTML = `<tr><td colspan="13" class="hint" style="padding:16px;">${started.length? '找不到符合條件的案件':'還沒有案件加入核銷清單，請在上方搜尋協會名稱後加入。'}</td></tr>`;
+    return;
+  }
 
   tbody.innerHTML = list.map(c=>{
     const s = c.settlement || {};
@@ -869,12 +973,22 @@ function renderSettleTable(){
       <td><input type="checkbox" data-field="incomeTax" ${s.incomeTax?'checked':''}></td>
       <td><input type="checkbox" data-field="neighborSettle" ${s.neighborSettle?'checked':''}></td>
       <td><input type="text" data-field="notes" value="${escAttr(s.notes||'')}" placeholder="備註"></td>
+      <td><button type="button" class="remove-btn" data-remove="${escAttr(c.serial)}" title="移出核銷清單">✕</button></td>
     </tr>`;
   }).join('');
 }
 
 function escHtml(v){ return String(v??'').replace(/[&<>]/g, ch=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[ch])); }
 function escAttr(v){ return String(v??'').replace(/[&<>"']/g, ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch])); }
+
+document.getElementById('settleTableBody').addEventListener('click', e=>{
+  const serial = e.target.dataset.remove;
+  if(!serial) return;
+  if(confirm('確定要把這件移出核銷清單嗎？已登記的核銷資料會被清空。')){
+    const idx = cases.findIndex(c=>c.serial===serial);
+    if(idx>=0){ cases[idx].settlement = null; saveCases(cases); renderSettleTable(); }
+  }
+});
 
 document.getElementById('settleTableBody').addEventListener('change', e=>{
   const field = e.target.dataset.field;
@@ -896,6 +1010,62 @@ document.getElementById('settleTableBody').addEventListener('change', e=>{
 });
 
 // ---------- 總覽 Tab ----------
+// ---------- 已建檔案件 Tab ----------
+const recordsSearchInput = document.getElementById('recordsSearchInput');
+recordsSearchInput.addEventListener('input', renderRecordsTable);
+
+function renderRecordsTable(){
+  document.getElementById('recordsCount').textContent = cases.length;
+  const q = recordsSearchInput.value.trim();
+  const tbody = document.getElementById('recordsTableBody');
+  const list = cases.filter(c=>
+    !q || (c.orgName||'').includes(q) || (c.serial||'').includes(q) || (String(c.taxId)||'').includes(q) || (c.activityName||'').includes(q)
+  );
+  if(!list.length){
+    tbody.innerHTML = `<tr><td colspan="17" class="hint" style="padding:16px;">${cases.length? '找不到符合條件的案件':'還沒有任何建檔資料，請先上傳核准公文或手動輸入。'}</td></tr>`;
+    return;
+  }
+  tbody.innerHTML = list.map(c=>{
+    return `<tr data-serial="${escAttr(c.serial)}">
+      <td class="readonly-cell">${escHtml(c.serial)}</td>
+      <td class="org-cell">${escHtml(c.orgName)}</td>
+      <td class="readonly-cell">${escHtml(c.taxId||'—')}</td>
+      <td class="org-cell">${escHtml(c.activityName||'—')}</td>
+      <td class="org-cell">${escHtml(c.location||'—')}</td>
+      <td class="readonly-cell">${escHtml(c.startDate||'—')}</td>
+      <td class="readonly-cell">${escHtml(c.endDate||'—')}</td>
+      <td class="readonly-cell">${c.budgetAmount?Number(c.budgetAmount).toLocaleString():'—'}</td>
+      <td class="readonly-cell">${c.ownFund?Number(c.ownFund).toLocaleString():'—'}</td>
+      <td class="readonly-cell">${c.approvedAmount?Number(c.approvedAmount).toLocaleString():'—'}</td>
+      <td class="readonly-cell">${escHtml(c.approvedDate||'—')}</td>
+      <td class="readonly-cell">${escHtml(c.responsible||'—')}</td>
+      <td class="readonly-cell">${escHtml(c.contact||'—')}</td>
+      <td class="readonly-cell">${escHtml(c.phone||'—')}</td>
+      <td class="org-cell">${escHtml(c.mailAddress||'—')}</td>
+      <td class="org-cell">${escHtml(c.orgAddress||'—')}</td>
+      <td>
+        <button type="button" class="btn secondary small" data-edit="${escAttr(c.serial)}">編輯</button>
+        <button type="button" class="btn danger small" data-delete="${escAttr(c.serial)}">刪除</button>
+      </td>
+    </tr>`;
+  }).join('');
+  tbody.querySelectorAll('[data-edit]').forEach(btn=>{
+    btn.addEventListener('click', ()=>openCaseForEdit(btn.dataset.edit));
+  });
+  tbody.querySelectorAll('[data-delete]').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      const serial = btn.dataset.delete;
+      const rec = cases.find(c=>c.serial===serial);
+      if(!rec) return;
+      if(confirm(`確定要刪除案件「${rec.serial} ${rec.orgName}」嗎？此動作無法復原。`)){
+        cases = cases.filter(c=>c.serial!==serial);
+        saveCases(cases);
+        renderRecordsTable();
+      }
+    });
+  });
+}
+
 function renderOverview(){
   document.getElementById('overviewCount').textContent = cases.length;
   const tbody = document.querySelector('#overviewTable tbody');
@@ -911,8 +1081,14 @@ function renderOverview(){
   }).join('');
   tbody.querySelectorAll('tr').forEach(tr=>{
     tr.addEventListener('click', ()=>{
+      const idx = cases.findIndex(c=>c.serial===tr.dataset.serial);
+      if(idx>=0 && !isStarted(cases[idx])){
+        cases[idx].settlement = {};
+        saveCases(cases);
+      }
       document.querySelector('#tabs button[data-tab="settle"]').click();
       searchInput.value = tr.dataset.serial;
+      statusFilter.value = '';
       renderSettleTable();
     });
   });
