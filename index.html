@@ -261,14 +261,14 @@
   <!-- ===================== 設定 TAB ===================== -->
   <section id="tab-settings" style="display:none;">
     <div class="card">
-      <h2>Anthropic API 金鑰</h2>
+      <h2>Google Gemini API 金鑰</h2>
       <div class="hint">
-        用來呼叫 Claude 辨識掃描文件。金鑰只存在這台電腦的瀏覽器裡（localStorage），不會傳到其他地方，
+        用來呼叫 Gemini 辨識掃描文件。金鑰只存在這台電腦的瀏覽器裡（localStorage），不會傳到其他地方，
         但仍請妥善保管，不要把這個檔案傳給別人時保留金鑰。<br>
-        還沒有金鑰的話，可以到 <span style="color:var(--pine)">console.anthropic.com</span> 申請。
+        還沒有金鑰的話，可以到 <span style="color:var(--pine)">aistudio.google.com/apikey</span> 免費申請。
       </div>
       <label>API Key</label>
-      <input type="password" id="apiKeyInput" placeholder="sk-ant-...">
+      <input type="password" id="apiKeyInput" placeholder="AIza...">
       <div class="grid-actions">
         <button class="btn" id="btnSaveKey">儲存</button>
         <button class="btn danger" id="btnClearKey">清除金鑰</button>
@@ -287,7 +287,8 @@
 
 <script>
 const STORE_KEY = 'nl_subsidy_cases_v1';
-const APIKEY_KEY = 'nl_subsidy_apikey_v1';
+const APIKEY_KEY = 'nl_subsidy_gemini_apikey_v1';
+const GEMINI_MODEL = 'gemini-3.5-flash';
 
 function loadCases(){ try{ return JSON.parse(localStorage.getItem(STORE_KEY) || '[]'); }catch(e){ return []; } }
 function saveCases(list){ localStorage.setItem(STORE_KEY, JSON.stringify(list)); }
@@ -362,8 +363,8 @@ document.getElementById('btnExtract').addEventListener('click', async ()=>{
   setStatus('extractStatus','正在轉換 PDF 並呼叫 AI 辨識，請稍候...','info');
   try{
     const images = await pdfToImages(pendingFile);
-    const content = images.map(img => ({type:'image', source:{type:'base64', media_type:'image/png', data: img}}));
-    content.push({type:'text', text: `這是一份社區/協會向台電睦鄰計畫申請補助的核准公文掃描檔。請仔細閱讀並只回傳一個 JSON 物件（不要加任何說明文字或markdown符號），欄位如下，找不到的欄位請填空字串：
+    const parts = images.map(img => ({inline_data:{mime_type:'image/png', data: img}}));
+    parts.push({text: `這是一份社區/協會向台電睦鄰計畫申請補助的核准公文掃描檔。請仔細閱讀並只回傳一個 JSON 物件（不要加任何說明文字或markdown符號），欄位如下，找不到的欄位請填空字串：
 {
  "month": "月份，例如 2月份",
  "docNumber": "公服處編號，例如 0053號",
@@ -385,23 +386,19 @@ document.getElementById('btnExtract').addEventListener('click', async ()=>{
  "orgAddress": "會址"
 }`});
 
-    const resp = await fetch('https://api.anthropic.com/v1/messages', {
+    const resp = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent?key=${encodeURIComponent(apiKey)}`, {
       method:'POST',
-      headers:{
-        'Content-Type':'application/json',
-        'x-api-key': apiKey,
-        'anthropic-version':'2023-06-01',
-        'anthropic-dangerous-direct-browser-access':'true'
-      },
+      headers:{ 'Content-Type':'application/json' },
       body: JSON.stringify({
-        model:'claude-sonnet-4-6',
-        max_tokens:1200,
-        messages:[{role:'user', content}]
+        contents:[{ role:'user', parts }],
+        generationConfig:{ maxOutputTokens:1200, responseMimeType:'application/json' }
       })
     });
     const data = await resp.json();
     if(data.error){ throw new Error(data.error.message || 'API 錯誤'); }
-    const text = data.content.map(b=>b.text||'').join('\n').trim().replace(/^```json|```$/g,'').trim();
+    const candidate = data.candidates && data.candidates[0];
+    if(!candidate){ throw new Error('沒有收到辨識結果，請確認金鑰或稍後再試。'); }
+    const text = candidate.content.parts.map(p=>p.text||'').join('\n').trim().replace(/^```json|```$/g,'').trim();
     const parsed = JSON.parse(text);
     fillForm(parsed);
     setStatus('extractStatus','辨識完成，請核對下方欄位後儲存。','ok');
