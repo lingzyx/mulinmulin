@@ -50,7 +50,8 @@
     white-space:nowrap;
   }
   nav button.active{color:#fff; border-bottom:2px solid var(--clay);}
-  main{max-width:920px; margin:0 auto; padding:20px 16px 60px;}
+  main{max-width:1440px; width:96%; margin:0 auto; padding:20px 16px 60px;}
+  .card.narrow{max-width:760px; margin-left:auto; margin-right:auto;}
   .card{
     background:var(--paper-card); border:1px solid var(--line); border-radius:6px;
     padding:18px; margin-bottom:16px; box-shadow:0 1px 2px rgba(43,42,37,0.04);
@@ -200,7 +201,7 @@
 
   <!-- ===================== 建檔 TAB ===================== -->
   <section id="tab-register">
-    <div class="card">
+    <div class="card narrow">
       <h2>批次上傳核准公文（掃描 PDF）</h2>
       <div class="hint">一次可選擇最多 10 件 PDF。系統會逐件辨識並自動建立案件，完成後請點「檢視修改」或到「已建檔案件」頁核對日期、金額、統編與地址。</div>
       <div class="file-drop" id="dropZone">
@@ -245,7 +246,7 @@
       </div>
     </div>
 
-    <div class="card" id="formCard" style="display:none;">
+    <div class="card narrow" id="formCard" style="display:none;">
       <h2>案件資料（請核對後儲存）</h2>
       <div class="hint">AI 辨識僅供參考，日期、金額、統編請務必核對原文件。特別注意：核定金額看「擬請同意協助...預算由公服處另行移撥」那句、核定日期看處長蓋章、申請日期看經辦蓋章、會址以立案證書為準。</div>
       <div class="row">
@@ -294,7 +295,7 @@
 
   <!-- ===================== 核銷 TAB ===================== -->
   <section id="tab-settle" style="display:none;">
-    <div class="card">
+    <div class="card narrow">
       <h2>加入核銷案件</h2>
       <div class="hint">協會辦完活動、送核銷文件來的時候，在這裡打單位名稱的關鍵字（不用打全名）快速找到案件，選取後才會出現在下面的核銷清單。</div>
       <input type="text" id="addSearchInput" placeholder="例如：福德宮 / 人文 / 115-007" autocomplete="off">
@@ -364,7 +365,7 @@
 
   <!-- ===================== 設定 TAB ===================== -->
   <section id="tab-settings" style="display:none;">
-    <div class="card">
+    <div class="card narrow">
       <h2>Google Gemini API 金鑰</h2>
       <div class="hint">
         用來呼叫 Gemini 辨識掃描文件。金鑰只儲存在這台電腦的瀏覽器裡（localStorage），呼叫 Gemini API 時會傳送至 Google。
@@ -379,7 +380,7 @@
       </div>
       <div id="keyStatus"></div>
     </div>
-    <div class="card">
+    <div class="card narrow">
       <h2>資料</h2>
       <div class="hint">目前共有 <b id="settingsCount">0</b> 筆案件資料，全部存在這台瀏覽器的本機儲存空間。清除瀏覽器資料或換電腦都不會保留，請定期用「總覽」頁的備份功能匯出 JSON。</div>
       <button class="btn danger" id="btnWipeAll">🗑️ 清空全部資料</button>
