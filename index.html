@@ -108,6 +108,22 @@
   .footer-note{font-size:11.5px; color:var(--ink-soft); text-align:center; margin-top:30px; line-height:1.7;}
   .grid-actions{display:flex; gap:8px; flex-wrap:wrap; margin-top:14px;}
   .badge-count{background:var(--pine); color:#fff; border-radius:10px; font-size:11px; padding:1px 7px; margin-left:6px;}
+  .batch-list{margin-top:12px; display:grid; gap:8px;}
+  .batch-row{
+    display:flex; align-items:center; justify-content:space-between; gap:12px;
+    padding:10px 12px; border:1px solid var(--line); border-radius:5px; background:#fffefb;
+  }
+  .batch-main{min-width:0; flex:1;}
+  .batch-file{font-size:13.5px; font-weight:500; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
+  .batch-detail{font-size:11.5px; color:var(--ink-soft); margin-top:3px; line-height:1.5;}
+  .batch-state{font-size:11.5px; padding:3px 8px; border-radius:10px; white-space:nowrap;}
+  .batch-state.waiting{background:#eee9dd; color:var(--ink-soft);}
+  .batch-state.running{background:#e8eef2; color:#31566d;}
+  .batch-state.success{background:#e3ede6; color:var(--ok);}
+  .batch-state.failed{background:#f6e2dc; color:var(--warn);}
+  .batch-state.skipped{background:#f2ead3; color:#8a6a1f;}
+  .batch-actions{display:flex; align-items:center; gap:7px; flex-shrink:0;}
+  .file-drop.disabled{opacity:.6; cursor:not-allowed;}
   ::placeholder{color:#b7ae99;}
 </style>
 </head>
@@ -115,7 +131,7 @@
 
 <header>
   <p class="brand">睦鄰補助案件管理</p>
-  <div class="sub">建檔 · 核銷 · 全部存在這台電腦，不上雲端</div>
+  <div class="sub">案件資料存於本機 · PDF 辨識時會傳送至 Google Gemini</div>
 </header>
 
 <nav id="tabs">
@@ -130,14 +146,17 @@
   <!-- ===================== 建檔 TAB ===================== -->
   <section id="tab-register">
     <div class="card">
-      <h2>上傳核准公文（掃描 PDF）</h2>
-      <div class="hint">系統會把 PDF 每一頁轉成圖片，交給 AI 辨識欄位。辨識完成後你可以核對、修改，再存檔。</div>
+      <h2>批次上傳核准公文（掃描 PDF）</h2>
+      <div class="hint">一次可選擇最多 10 件 PDF。系統會逐件辨識並自動建立案件，完成後請點「檢視修改」或到「總覽」核對日期、金額、統編與地址。</div>
       <div class="file-drop" id="dropZone">
-        點選或拖曳 PDF 檔案到這裡<br><span id="fileName" style="color:var(--pine); font-weight:500;"></span>
+        點選或拖曳 PDF 檔案到這裡（最多 10 件）<br>
+        <span id="fileName" style="color:var(--pine); font-weight:500;"></span>
       </div>
-      <input type="file" id="pdfInput" accept="application/pdf" style="display:none;">
+      <input type="file" id="pdfInput" accept="application/pdf,.pdf" multiple style="display:none;">
+      <div id="batchQueue" class="batch-list"></div>
       <div class="grid-actions">
-        <button class="btn" id="btnExtract" disabled>✨ 開始辨識</button>
+        <button class="btn" id="btnExtract" disabled>✨ 批次辨識並建檔</button>
+        <button class="btn secondary" id="btnClearFiles" disabled>清除選取</button>
         <button class="btn secondary" id="btnManual">✏️ 直接手動輸入</button>
       </div>
       <div id="extractStatus"></div>
@@ -264,8 +283,8 @@
     <div class="card">
       <h2>Google Gemini API 金鑰</h2>
       <div class="hint">
-        用來呼叫 Gemini 辨識掃描文件。金鑰只存在這台電腦的瀏覽器裡（localStorage），不會傳到其他地方，
-        但仍請妥善保管，不要把這個檔案傳給別人時保留金鑰。<br>
+        用來呼叫 Gemini 辨識掃描文件。金鑰只儲存在這台電腦的瀏覽器裡（localStorage），呼叫 Gemini API 時會傳送至 Google。
+        請勿把金鑰直接寫進 HTML 或上傳到 GitHub，也不建議把這個公開網址提供給多人共用。<br>
         還沒有金鑰的話，可以到 <span style="color:var(--pine)">aistudio.google.com/apikey</span> 免費申請。
       </div>
       <label>API Key</label>
@@ -283,7 +302,7 @@
     </div>
   </section>
 
-  <div class="footer-note">資料僅儲存於本機瀏覽器 · 建議定期備份 JSON</div>
+  <div class="footer-note">案件資料儲存於本機瀏覽器 · PDF 辨識時會傳送至 Google Gemini · 建議定期備份 JSON</div>
 </main>
 
 <script>
@@ -312,42 +331,53 @@ document.querySelectorAll('#tabs button').forEach(btn=>{
   });
 });
 
-// ---------- PDF handling ----------
+// ---------- PDF batch handling ----------
 pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
 
 const dropZone = document.getElementById('dropZone');
 const pdfInput = document.getElementById('pdfInput');
-let pendingFile = null;
+const btnExtract = document.getElementById('btnExtract');
+const btnClearFiles = document.getElementById('btnClearFiles');
+let pendingJobs = [];
+let batchRunning = false;
 
-dropZone.addEventListener('click', ()=>pdfInput.click());
-dropZone.addEventListener('dragover', e=>{e.preventDefault(); dropZone.classList.add('drag');});
-dropZone.addEventListener('dragleave', ()=>dropZone.classList.remove('drag'));
-dropZone.addEventListener('drop', e=>{
-  e.preventDefault(); dropZone.classList.remove('drag');
-  if(e.dataTransfer.files[0]) handleFile(e.dataTransfer.files[0]);
-});
-pdfInput.addEventListener('change', e=>{ if(e.target.files[0]) handleFile(e.target.files[0]); });
+const EXTRACTION_PROMPT = `這是一份社區/協會向台電睦鄰計畫申請補助的核准公文 PDF（通常包含公眾服務處送件單、委員或協會來函、活動計畫書、預算表、立案證書等多頁）。請仔細閱讀 PDF 全部頁面並只回傳一個 JSON 物件，不要加任何說明文字或 Markdown 符號。找不到的欄位請填空字串。
 
-function handleFile(file){
-  pendingFile = file;
-  document.getElementById('fileName').textContent = file.name;
-  document.getElementById('btnExtract').disabled = false;
+辨識規則：
+1. approvedAmount 不是協會申請金額，而是送件單中「擬請同意協助新台幣 OO 元，預算由公服處另行移撥」的核定金額；若為國字大寫，請換算成阿拉伯數字。
+2. approvedDate 是送件單簽核欄位中「處長」蓋章日期，不是公文發文日期。
+3. applyDate 是送件單簽核欄位中「經辦」蓋章日期。
+4. orgAddress 必須以人民團體立案證書登記的會址為準。
+5. 金額欄位只回傳純數字，不要逗號、元或其他文字。
+6. 日期盡量統一為民國年格式，例如 115/2/26。
+
+欄位：month、docNumber、orgName、taxId、activityName、location、startDate、endDate、budgetAmount、ownFund、requestedAmount、approvedAmount、approvedDate、applyDate、responsible、contact、phone、mailAddress、orgAddress。`;
+
+const RESPONSE_SCHEMA = {
+  type:'OBJECT',
+  properties:{
+    month:{type:'STRING'}, docNumber:{type:'STRING'}, orgName:{type:'STRING'}, taxId:{type:'STRING'},
+    activityName:{type:'STRING'}, location:{type:'STRING'}, startDate:{type:'STRING'}, endDate:{type:'STRING'},
+    budgetAmount:{type:'STRING'}, ownFund:{type:'STRING'}, requestedAmount:{type:'STRING'}, approvedAmount:{type:'STRING'},
+    approvedDate:{type:'STRING'}, applyDate:{type:'STRING'}, responsible:{type:'STRING'}, contact:{type:'STRING'},
+    phone:{type:'STRING'}, mailAddress:{type:'STRING'}, orgAddress:{type:'STRING'}
+  },
+  required:[
+    'month','docNumber','orgName','taxId','activityName','location','startDate','endDate',
+    'budgetAmount','ownFund','requestedAmount','approvedAmount','approvedDate','applyDate',
+    'responsible','contact','phone','mailAddress','orgAddress'
+  ]
+};
+
+function escapeHtml(value){
+  return String(value ?? '').replace(/[&<>'"]/g, ch=>({
+    '&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'
+  })[ch]);
 }
 
-async function pdfToImages(file){
-  const buf = await file.arrayBuffer();
-  const pdf = await pdfjsLib.getDocument({data: buf}).promise;
-  const images = [];
-  const maxPages = Math.min(pdf.numPages, 4);
-  for(let i=1;i<=maxPages;i++){
-    const page = await pdf.getPage(i);
-    const viewport = page.getViewport({scale:2.0});
-    const canvas = document.createElement('canvas');
-    canvas.width = viewport.width; canvas.height = viewport.height;
-    await page.render({canvasContext: canvas.getContext('2d'), viewport}).promise;
-    images.push(canvas.toDataURL('image/png').split(',')[1]);
-  }
-  return images;
+function formatFileSize(bytes){
+  if(bytes < 1024 * 1024) return Math.max(1, Math.round(bytes / 1024)) + ' KB';
+  return (bytes / 1024 / 1024).toFixed(1) + ' MB';
 }
 
 function setStatus(elId, msg, type){
@@ -355,122 +385,298 @@ function setStatus(elId, msg, type){
   el.innerHTML = msg ? `<div class="status-msg ${type}">${msg}</div>` : '';
 }
 
-document.getElementById('btnExtract').addEventListener('click', async ()=>{
-  const apiKey = getApiKey();
-  if(!apiKey){ setStatus('extractStatus','請先到「設定」頁輸入 API 金鑰。','err'); return; }
-  if(!pendingFile){ return; }
-  const btn = document.getElementById('btnExtract');
-  btn.disabled = true; btn.textContent = '辨識中...';
-  setStatus('extractStatus','正在轉換 PDF 並呼叫 AI 辨識，請稍候...','info');
-  try{
-    const images = await pdfToImages(pendingFile);
-    const parts = images.map(img => ({inline_data:{mime_type:'image/png', data: img}}));
-    parts.push({text: `這是一份社區/協會向台電睦鄰計畫申請補助的核准公文掃描檔（通常包含公眾服務處送件單、委員或協會來函、活動計畫書、預算表、立案證書等多頁）。請仔細閱讀所有頁面並只回傳一個 JSON 物件（不要加任何說明文字或markdown符號），欄位如下，找不到的欄位請填空字串：
-{
- "month": "月份，例如 2月份",
- "docNumber": "公服處編號，例如 0053號",
- "orgName": "申請單位全名",
- "taxId": "統一編號數字，通常在預算表下方的申請單位聲明事項欄位",
- "activityName": "活動名稱",
- "location": "活動地點",
- "startDate": "活動時間起，格式如 115/2/26",
- "endDate": "活動時間迄",
- "budgetAmount": "活動預算金額，純數字，通常是預算表最下方的合計數",
- "ownFund": "自有款，純數字，通常在申請單位聲明事項欄位",
- "requestedAmount": "申請補助金額，純數字，即協會/委員原始要求的金額",
- "approvedAmount": "核定補助金額，純數字。注意：這不是申請金額，而是送件單中『擬請同意協助新台幣OO元，預算由公服處另行移撥』這句話講的金額，通常寫成國字大寫（例如壹萬伍仟元=15000），請務必換算成阿拉伯數字",
- "approvedDate": "核定日期，格式如115/2/11。這是送件單簽核欄位中『處長』蓋章上的日期章戳，不是公文最上方的發文日期",
- "applyDate": "申請日期，格式如115/2/9。這是送件單簽核欄位中『經辦』蓋章上的日期章戳",
- "responsible": "負責人姓名，通常是理事長",
- "contact": "連絡人姓名",
- "phone": "連絡電話",
- "mailAddress": "通訊地址，即協會發函或委員來函中提到的聯絡地址",
- "orgAddress": "會址，必須以人民團體立案證書上登記的會址所在地為準，不要用其他頁面出現的地址"
-}`});
+function selectPdfFiles(fileList){
+  if(batchRunning) return;
+  const allFiles = Array.from(fileList || []);
+  const invalid = allFiles.filter(file=>file.type !== 'application/pdf' && !file.name.toLowerCase().endsWith('.pdf'));
+  if(invalid.length){
+    setStatus('extractStatus','只能上傳 PDF 檔案。','err');
+    return;
+  }
+  if(allFiles.length > 10){
+    setStatus('extractStatus','一次最多只能選擇 10 件 PDF，請重新選取。','err');
+    return;
+  }
+  const tooLarge = allFiles.find(file=>file.size > 50 * 1024 * 1024);
+  if(tooLarge){
+    setStatus('extractStatus',`「${escapeHtml(tooLarge.name)}」超過 50 MB，請先縮小檔案。`,'err');
+    return;
+  }
+  pendingJobs = allFiles.map(file=>({
+    file, status:'waiting', message:'等待辨識', serial:'', result:null
+  }));
+  setStatus('extractStatus','',null);
+  renderBatchQueue();
+  updateBatchControls();
+}
 
-    const resp = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent?key=${encodeURIComponent(apiKey)}`, {
-      method:'POST',
-      headers:{ 'Content-Type':'application/json' },
-      body: JSON.stringify({
-        contents:[{ role:'user', parts }],
-        generationConfig:{
-          maxOutputTokens:4000,
-          responseMimeType:'application/json',
-          responseSchema:{
-            type:'OBJECT',
-            properties:{
-              month:{type:'STRING'},
-              docNumber:{type:'STRING'},
-              orgName:{type:'STRING'},
-              taxId:{type:'STRING'},
-              activityName:{type:'STRING'},
-              location:{type:'STRING'},
-              startDate:{type:'STRING'},
-              endDate:{type:'STRING'},
-              budgetAmount:{type:'STRING'},
-              ownFund:{type:'STRING'},
-              requestedAmount:{type:'STRING'},
-              approvedAmount:{type:'STRING'},
-              approvedDate:{type:'STRING'},
-              applyDate:{type:'STRING'},
-              responsible:{type:'STRING'},
-              contact:{type:'STRING'},
-              phone:{type:'STRING'},
-              mailAddress:{type:'STRING'},
-              orgAddress:{type:'STRING'}
-            },
-            required:[
-              'month','docNumber','orgName','taxId','activityName','location',
-              'startDate','endDate','budgetAmount','ownFund','requestedAmount',
-              'approvedAmount','approvedDate','applyDate','responsible','contact',
-              'phone','mailAddress','orgAddress'
-            ]
-          }
-        }
-      })
-    });
-    const data = await resp.json();
-    if(data.error){ throw new Error(data.error.message || 'API 錯誤'); }
-    const candidate = data.candidates && data.candidates[0];
-    if(!candidate){ throw new Error('沒有收到辨識結果，請確認金鑰或稍後再試。'); }
-    if(candidate.finishReason && candidate.finishReason !== 'STOP'){
-      throw new Error('AI 回覆未完整結束（'+candidate.finishReason+'），請重新辨識。');
+dropZone.addEventListener('click', ()=>{ if(!batchRunning) pdfInput.click(); });
+dropZone.addEventListener('dragover', e=>{
+  e.preventDefault();
+  if(!batchRunning) dropZone.classList.add('drag');
+});
+dropZone.addEventListener('dragleave', ()=>dropZone.classList.remove('drag'));
+dropZone.addEventListener('drop', e=>{
+  e.preventDefault();
+  dropZone.classList.remove('drag');
+  selectPdfFiles(e.dataTransfer.files);
+});
+pdfInput.addEventListener('change', e=>{
+  selectPdfFiles(e.target.files);
+  pdfInput.value = '';
+});
+
+btnClearFiles.addEventListener('click', ()=>{
+  if(batchRunning) return;
+  pendingJobs = [];
+  renderBatchQueue();
+  updateBatchControls();
+  setStatus('extractStatus','',null);
+});
+
+function updateBatchControls(){
+  const count = pendingJobs.length;
+  document.getElementById('fileName').textContent = count ? `已選擇 ${count} 件 PDF` : '';
+  btnExtract.disabled = batchRunning || count === 0;
+  btnClearFiles.disabled = batchRunning || count === 0;
+  dropZone.classList.toggle('disabled', batchRunning);
+}
+
+function renderBatchQueue(){
+  const box = document.getElementById('batchQueue');
+  if(!pendingJobs.length){ box.innerHTML = ''; return; }
+  const labels = {
+    waiting:'等待', running:'辨識中', success:'已建檔', failed:'失敗', skipped:'已存在'
+  };
+  box.innerHTML = pendingJobs.map((job,index)=>{
+    const detail = job.status === 'success'
+      ? `${escapeHtml(job.serial)}｜${escapeHtml(job.result?.orgName || '未辨識單位')}｜核定 ${escapeHtml(job.result?.approvedAmount || '—')} 元`
+      : escapeHtml(job.message || '');
+    const editButton = (job.status === 'success' || job.status === 'skipped') && job.serial
+      ? `<button class="btn secondary small batch-edit" data-serial="${escapeHtml(job.serial)}">檢視修改</button>`
+      : '';
+    return `<div class="batch-row" data-index="${index}">
+      <div class="batch-main">
+        <div class="batch-file">${escapeHtml(job.file.name)}</div>
+        <div class="batch-detail">${detail}</div>
+      </div>
+      <div class="batch-actions">
+        <span class="batch-state ${job.status}">${labels[job.status] || job.status}</span>
+        ${editButton}
+      </div>
+    </div>`;
+  }).join('');
+  box.querySelectorAll('.batch-edit').forEach(button=>{
+    button.addEventListener('click', ()=>openCaseForEdit(button.dataset.serial));
+  });
+}
+
+function openCaseForEdit(serial){
+  const record = cases.find(item=>item.serial === serial);
+  if(!record) return;
+  fillForm(record, record.serial);
+  document.getElementById('formCard').style.display = 'block';
+  setStatus('saveStatus','這筆案件已建檔，修改後按「儲存案件」即可更新。','info');
+  document.getElementById('formCard').scrollIntoView({behavior:'smooth'});
+}
+
+function pdfToBase64(file){
+  return new Promise((resolve,reject)=>{
+    const reader = new FileReader();
+    reader.onload = ()=>{
+      const result = String(reader.result || '');
+      const comma = result.indexOf(',');
+      if(comma < 0) reject(new Error('無法讀取 PDF 內容。'));
+      else resolve(result.slice(comma + 1));
+    };
+    reader.onerror = ()=>reject(new Error('讀取 PDF 失敗。'));
+    reader.readAsDataURL(file);
+  });
+}
+
+function sleep(ms){ return new Promise(resolve=>setTimeout(resolve, ms)); }
+
+async function extractOnePdf(file, apiKey, onProgress){
+  onProgress?.('正在讀取完整 PDF…');
+  const base64Pdf = await pdfToBase64(file);
+  const requestBody = {
+    contents:[{
+      role:'user',
+      parts:[
+        {inline_data:{mime_type:'application/pdf', data:base64Pdf}},
+        {text:EXTRACTION_PROMPT}
+      ]
+    }],
+    generationConfig:{
+      maxOutputTokens:4000,
+      responseMimeType:'application/json',
+      responseSchema:RESPONSE_SCHEMA
     }
-    const text = (candidate.content?.parts || [])
-      .map(p=>p.text||'')
+  };
+
+  for(let attempt=1; attempt<=3; attempt++){
+    onProgress?.(attempt === 1 ? '正在呼叫 Gemini 辨識…' : `暫時忙碌，正在第 ${attempt} 次重試…`);
+    let resp;
+    let data;
+    try{
+      resp = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent?key=${encodeURIComponent(apiKey)}`, {
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body:JSON.stringify(requestBody)
+      });
+      data = await resp.json();
+    }catch(networkErr){
+      if(attempt < 3){ await sleep(attempt * 3000); continue; }
+      throw new Error('網路連線失敗，請稍後再試。');
+    }
+
+    if(!resp.ok || data.error){
+      const status = resp.status;
+      const message = data?.error?.message || `API 錯誤（${status}）`;
+      if([429,500,502,503,504].includes(status) && attempt < 3){
+        await sleep(attempt * 4000);
+        continue;
+      }
+      throw new Error(message);
+    }
+
+    const candidate = data.candidates?.[0];
+    if(!candidate) throw new Error('沒有收到辨識結果，請確認金鑰或稍後再試。');
+    if(candidate.finishReason && candidate.finishReason !== 'STOP'){
+      throw new Error(`AI 回覆未完整結束（${candidate.finishReason}）。`);
+    }
+    const rawText = (candidate.content?.parts || [])
+      .map(part=>part.text || '')
       .join('')
       .trim()
       .replace(/^```(?:json)?\s*/i,'')
       .replace(/```\s*$/,'')
       .trim();
-    if(!text){ throw new Error('AI 沒有回傳可解析的內容。'); }
-    let parsed;
+    if(!rawText) throw new Error('AI 沒有回傳可解析的內容。');
     try{
-      parsed = JSON.parse(text);
+      return JSON.parse(rawText);
     }catch(parseErr){
-      console.error('Gemini 原始回覆：', text);
-      throw new Error('AI 回傳的 JSON 不完整，請重新辨識一次。');
+      console.error('Gemini 原始回覆：', rawText);
+      throw new Error('AI 回傳的 JSON 不完整，請重新辨識這件文件。');
     }
-    fillForm(parsed);
-    setStatus('extractStatus','辨識完成，請核對下方欄位後儲存。','ok');
-    document.getElementById('formCard').style.display='block';
-    document.getElementById('formCard').scrollIntoView({behavior:'smooth'});
-  }catch(err){
-    setStatus('extractStatus', '辨識失敗：'+err.message, 'err');
-  }finally{
-    btn.disabled = false; btn.textContent = '✨ 開始辨識';
   }
+  throw new Error('辨識失敗。');
+}
+
+function findExistingFileCase(file){
+  return cases.find(item=>
+    item.sourceFileName === file.name &&
+    Number(item.sourceFileSize) === Number(file.size) &&
+    Number(item.sourceFileLastModified) === Number(file.lastModified)
+  );
+}
+
+function recordFromRecognition(data, file){
+  return {
+    serial:nextSerial(),
+    month:data.month || '',
+    docNumber:data.docNumber || '',
+    orgName:data.orgName || '',
+    taxId:data.taxId || '',
+    activityName:data.activityName || '',
+    location:data.location || '',
+    startDate:data.startDate || '',
+    endDate:data.endDate || '',
+    budgetAmount:data.budgetAmount || '',
+    ownFund:data.ownFund || '',
+    requestedAmount:data.requestedAmount || '',
+    approvedAmount:data.approvedAmount || '',
+    approvedDate:data.approvedDate || '',
+    applyDate:data.applyDate || '',
+    responsible:data.responsible || '',
+    contact:data.contact || '',
+    phone:data.phone || '',
+    mailAddress:data.mailAddress || '',
+    orgAddress:data.orgAddress || '',
+    cgss:false,
+    neighborSystem:false,
+    settlement:null,
+    sourceFileName:file.name,
+    sourceFileSize:file.size,
+    sourceFileLastModified:file.lastModified
+  };
+}
+
+btnExtract.addEventListener('click', async ()=>{
+  const apiKey = getApiKey();
+  if(!apiKey){ setStatus('extractStatus','請先到「設定」頁輸入 API 金鑰。','err'); return; }
+  if(!pendingJobs.length || batchRunning) return;
+
+  batchRunning = true;
+  btnExtract.textContent = '批次辨識中…';
+  updateBatchControls();
+  let successCount = 0;
+  let failedCount = 0;
+  let skippedCount = 0;
+
+  for(let index=0; index<pendingJobs.length; index++){
+    const job = pendingJobs[index];
+    const existing = findExistingFileCase(job.file);
+    if(existing){
+      job.status = 'skipped';
+      job.serial = existing.serial;
+      job.result = existing;
+      job.message = `已存在：${existing.serial}`;
+      skippedCount++;
+      renderBatchQueue();
+      continue;
+    }
+
+    job.status = 'running';
+    job.message = '準備辨識';
+    renderBatchQueue();
+    setStatus('extractStatus',`正在處理第 ${index+1}／${pendingJobs.length} 件：${escapeHtml(job.file.name)}`,'info');
+
+    try{
+      const parsed = await extractOnePdf(job.file, apiKey, message=>{
+        job.message = message;
+        renderBatchQueue();
+      });
+      if(!String(parsed.orgName || '').trim()){
+        throw new Error('未辨識到申請單位，因此沒有自動建檔。');
+      }
+      const record = recordFromRecognition(parsed, job.file);
+      cases.unshift(record);
+      saveCases(cases);
+      job.status = 'success';
+      job.serial = record.serial;
+      job.result = record;
+      job.message = '辨識完成並已建檔';
+      successCount++;
+    }catch(err){
+      job.status = 'failed';
+      job.message = err.message || '辨識失敗';
+      failedCount++;
+    }
+    renderBatchQueue();
+    if(index < pendingJobs.length - 1) await sleep(1000);
+  }
+
+  batchRunning = false;
+  btnExtract.textContent = '✨ 批次辨識並建檔';
+  updateBatchControls();
+  document.getElementById('settingsCount').textContent = cases.length;
+  const summary = `批次完成：成功建檔 ${successCount} 件` +
+    (skippedCount ? `、已存在 ${skippedCount} 件` : '') +
+    (failedCount ? `、失敗 ${failedCount} 件。失敗項目可重新選取後再試。` : '。請逐筆核對辨識內容。');
+  setStatus('extractStatus', summary, failedCount ? 'err' : 'ok');
 });
 
 document.getElementById('btnManual').addEventListener('click', ()=>{
   clearForm();
   document.getElementById('formCard').style.display='block';
+  setStatus('saveStatus','',null);
   document.getElementById('formCard').scrollIntoView({behavior:'smooth'});
 });
 
-function fillForm(d){
-  currentEditSerial = null;
-  document.getElementById('f_serial').value = nextSerial(d.month);
+function fillForm(d, serialOverride=''){
+  currentEditSerial = serialOverride || null;
+  document.getElementById('f_serial').value = serialOverride || nextSerial();
   document.getElementById('f_month').value = d.month||'';
   document.getElementById('f_docNumber').value = d.docNumber||'';
   document.getElementById('f_orgName').value = d.orgName||'';
@@ -490,8 +696,8 @@ function fillForm(d){
   document.getElementById('f_phone').value = d.phone||'';
   document.getElementById('f_mailAddress').value = d.mailAddress||'';
   document.getElementById('f_orgAddress').value = d.orgAddress||'';
-  document.getElementById('f_cgss').checked = false;
-  document.getElementById('f_neighborSystem').checked = false;
+  document.getElementById('f_cgss').checked = !!d.cgss;
+  document.getElementById('f_neighborSystem').checked = !!d.neighborSystem;
 }
 
 function clearForm(){
@@ -506,16 +712,20 @@ function clearForm(){
 }
 
 function nextSerial(){
-  const year = cases.length ? cases[0].serial.split('-')[0] : '115';
-  const nums = cases.map(c=>parseInt((c.serial||'').split('-')[1]||'0')).filter(n=>!isNaN(n));
-  const next = (nums.length? Math.max(...nums):0)+1;
+  const validSerials = cases.map(c=>String(c.serial||'')).filter(s=>/^\d{2,3}-\d+$/.test(s));
+  const currentRocYear = String(new Date().getFullYear() - 1911);
+  const year = validSerials.length ? validSerials[0].split('-')[0] : currentRocYear;
+  const nums = validSerials
+    .filter(s=>s.startsWith(year+'-'))
+    .map(s=>parseInt(s.split('-')[1],10))
+    .filter(n=>Number.isFinite(n));
+  const next = (nums.length ? Math.max(...nums) : 0) + 1;
   return year+'-'+String(next).padStart(3,'0');
 }
 
 document.getElementById('btnCancelForm').addEventListener('click', ()=>{
   document.getElementById('formCard').style.display='none';
-  pendingFile=null; document.getElementById('fileName').textContent='';
-  document.getElementById('btnExtract').disabled = true;
+  setStatus('saveStatus','',null);
 });
 
 document.getElementById('btnSaveCase').addEventListener('click', ()=>{
@@ -544,15 +754,27 @@ document.getElementById('btnSaveCase').addEventListener('click', ()=>{
     neighborSystem: document.getElementById('f_neighborSystem').checked
   };
   if(!rec.serial || !rec.orgName){ setStatus('saveStatus','請至少填寫序號與申請單位。','err'); return; }
-  const existingIdx = cases.findIndex(c=>c.serial===rec.serial);
-  if(existingIdx>=0){ rec.settlement = cases[existingIdx].settlement || null; cases[existingIdx] = rec; }
+  const originalSerial = currentEditSerial || rec.serial;
+  const serialConflict = cases.findIndex(c=>c.serial===rec.serial && c.serial!==originalSerial);
+  if(serialConflict>=0){ setStatus('saveStatus','這個序號已存在，請改用其他序號。','err'); return; }
+  const existingIdx = cases.findIndex(c=>c.serial===originalSerial);
+  if(existingIdx>=0){
+    const oldRecord = cases[existingIdx];
+    rec.settlement = oldRecord.settlement || null;
+    rec.sourceFileName = oldRecord.sourceFileName || '';
+    rec.sourceFileSize = oldRecord.sourceFileSize || 0;
+    rec.sourceFileLastModified = oldRecord.sourceFileLastModified || 0;
+    cases[existingIdx] = rec;
+  }
   else { rec.settlement = null; cases.unshift(rec); }
   saveCases(cases);
+  pendingJobs.forEach(job=>{
+    if(job.serial === originalSerial){ job.serial = rec.serial; job.result = rec; }
+  });
+  renderBatchQueue();
   setStatus('saveStatus','已儲存 ✓','ok');
   setTimeout(()=>{
     document.getElementById('formCard').style.display='none';
-    pendingFile=null; document.getElementById('fileName').textContent='';
-    document.getElementById('btnExtract').disabled = true;
     setStatus('saveStatus','',null);
   }, 900);
 });
