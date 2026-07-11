@@ -919,7 +919,7 @@ function fmtMoney(n){
   return isNaN(v) ? 0 : v;
 }
 
-function renderStats(list){
+function renderStats(list = cases.filter(isStarted)){
   const total = list.length;
   const done = list.filter(c=>c.settlement && c.settlement.status==='結案').length;
   const totalApproved = list.reduce((sum,c)=>sum+fmtMoney(c.approvedAmount),0);
