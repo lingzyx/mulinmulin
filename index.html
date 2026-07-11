@@ -145,7 +145,7 @@
 
     <div class="card" id="formCard" style="display:none;">
       <h2>案件資料（請核對後儲存）</h2>
-      <div class="hint">AI 辨識僅供參考，日期、金額、統編請務必核對原文件。</div>
+      <div class="hint">AI 辨識僅供參考，日期、金額、統編請務必核對原文件。特別注意：核定金額看「擬請同意協助...預算由公服處另行移撥」那句、核定日期看處長蓋章、申請日期看經辦蓋章、會址以立案證書為準。</div>
       <div class="row">
         <div><label>序號</label><input type="text" id="f_serial" placeholder="115-006"></div>
         <div><label>月份</label><input type="text" id="f_month" placeholder="2月份"></div>
@@ -168,7 +168,8 @@
       <div class="row">
         <div><label>申請補助金額</label><input type="number" id="f_requestedAmount"></div>
         <div><label>核定補助金額</label><input type="number" id="f_approvedAmount"></div>
-        <div><label>核定日期</label><input type="text" id="f_approvedDate" placeholder="115/2/9"></div>
+        <div><label>核定日期（處長蓋章日）</label><input type="text" id="f_approvedDate" placeholder="115/2/11"></div>
+        <div><label>申請日期（經辦蓋章日）</label><input type="text" id="f_applyDate" placeholder="115/2/9"></div>
       </div>
       <div class="row">
         <div><label>負責人</label><input type="text" id="f_responsible"></div>
@@ -364,26 +365,27 @@ document.getElementById('btnExtract').addEventListener('click', async ()=>{
   try{
     const images = await pdfToImages(pendingFile);
     const parts = images.map(img => ({inline_data:{mime_type:'image/png', data: img}}));
-    parts.push({text: `這是一份社區/協會向台電睦鄰計畫申請補助的核准公文掃描檔。請仔細閱讀並只回傳一個 JSON 物件（不要加任何說明文字或markdown符號），欄位如下，找不到的欄位請填空字串：
+    parts.push({text: `這是一份社區/協會向台電睦鄰計畫申請補助的核准公文掃描檔（通常包含公眾服務處送件單、委員或協會來函、活動計畫書、預算表、立案證書等多頁）。請仔細閱讀所有頁面並只回傳一個 JSON 物件（不要加任何說明文字或markdown符號），欄位如下，找不到的欄位請填空字串：
 {
  "month": "月份，例如 2月份",
  "docNumber": "公服處編號，例如 0053號",
  "orgName": "申請單位全名",
- "taxId": "統一編號數字",
+ "taxId": "統一編號數字，通常在預算表下方的申請單位聲明事項欄位",
  "activityName": "活動名稱",
  "location": "活動地點",
  "startDate": "活動時間起，格式如 115/2/26",
  "endDate": "活動時間迄",
- "budgetAmount": "活動預算金額，純數字",
- "ownFund": "自有款，純數字",
- "requestedAmount": "申請補助金額，純數字",
- "approvedAmount": "核定補助金額，純數字",
- "approvedDate": "核定日期，格式如115/2/9",
- "responsible": "負責人姓名",
+ "budgetAmount": "活動預算金額，純數字，通常是預算表最下方的合計數",
+ "ownFund": "自有款，純數字，通常在申請單位聲明事項欄位",
+ "requestedAmount": "申請補助金額，純數字，即協會/委員原始要求的金額",
+ "approvedAmount": "核定補助金額，純數字。注意：這不是申請金額，而是送件單中『擬請同意協助新台幣OO元，預算由公服處另行移撥』這句話講的金額，通常寫成國字大寫（例如壹萬伍仟元=15000），請務必換算成阿拉伯數字",
+ "approvedDate": "核定日期，格式如115/2/11。這是送件單簽核欄位中『處長』蓋章上的日期章戳，不是公文最上方的發文日期",
+ "applyDate": "申請日期，格式如115/2/9。這是送件單簽核欄位中『經辦』蓋章上的日期章戳",
+ "responsible": "負責人姓名，通常是理事長",
  "contact": "連絡人姓名",
  "phone": "連絡電話",
- "mailAddress": "通訊地址",
- "orgAddress": "會址"
+ "mailAddress": "通訊地址，即協會發函或委員來函中提到的聯絡地址",
+ "orgAddress": "會址，必須以人民團體立案證書上登記的會址所在地為準，不要用其他頁面出現的地址"
 }`});
 
     const resp = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent?key=${encodeURIComponent(apiKey)}`, {
@@ -433,6 +435,7 @@ function fillForm(d){
   document.getElementById('f_requestedAmount').value = d.requestedAmount||'';
   document.getElementById('f_approvedAmount').value = d.approvedAmount||'';
   document.getElementById('f_approvedDate').value = d.approvedDate||'';
+  document.getElementById('f_applyDate').value = d.applyDate||'';
   document.getElementById('f_responsible').value = d.responsible||'';
   document.getElementById('f_contact').value = d.contact||'';
   document.getElementById('f_phone').value = d.phone||'';
@@ -446,7 +449,7 @@ function clearForm(){
   currentEditSerial = null;
   ['f_serial','f_month','f_docNumber','f_orgName','f_taxId','f_activityName','f_location',
    'f_startDate','f_endDate','f_budgetAmount','f_ownFund','f_requestedAmount','f_approvedAmount',
-   'f_approvedDate','f_responsible','f_contact','f_phone','f_mailAddress','f_orgAddress'
+   'f_approvedDate','f_applyDate','f_responsible','f_contact','f_phone','f_mailAddress','f_orgAddress'
   ].forEach(id=>document.getElementById(id).value='');
   document.getElementById('f_serial').value = nextSerial('');
   document.getElementById('f_cgss').checked=false;
@@ -482,6 +485,7 @@ document.getElementById('btnSaveCase').addEventListener('click', ()=>{
     requestedAmount: document.getElementById('f_requestedAmount').value,
     approvedAmount: document.getElementById('f_approvedAmount').value,
     approvedDate: document.getElementById('f_approvedDate').value.trim(),
+    applyDate: document.getElementById('f_applyDate').value.trim(),
     responsible: document.getElementById('f_responsible').value.trim(),
     contact: document.getElementById('f_contact').value.trim(),
     phone: document.getElementById('f_phone').value.trim(),
@@ -601,7 +605,7 @@ document.getElementById('btnExportXlsx').addEventListener('click', ()=>{
     '統一編號':c.taxId, '活動名稱':c.activityName, '活動地點':c.location,
     '活動時間(起)':c.startDate, '活動時間(迄)':c.endDate,
     '活動預算金額':c.budgetAmount, '自有款':c.ownFund, '申請補助金額':c.requestedAmount,
-    '核定補助金額':c.approvedAmount, '核定日期':c.approvedDate,
+    '核定補助金額':c.approvedAmount, '核定日期':c.approvedDate, '申請日期':c.applyDate,
     '負責人':c.responsible, '連絡人':c.contact, '連絡電話':c.phone,
     '通訊地址':c.mailAddress, '會址':c.orgAddress,
     'CGSS':c.cgss?'v':'', '睦鄰系統':c.neighborSystem?'v':'',
