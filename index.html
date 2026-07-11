@@ -125,6 +125,41 @@
   .batch-actions{display:flex; align-items:center; gap:7px; flex-shrink:0;}
   .file-drop.disabled{opacity:.6; cursor:not-allowed;}
   ::placeholder{color:#b7ae99;}
+
+  .stat-bar{display:flex; gap:10px; flex-wrap:wrap;}
+  .stat-box{
+    flex:1; min-width:110px; background:var(--paper-deep); border:1px solid var(--line);
+    border-radius:6px; padding:10px 12px; text-align:center;
+  }
+  .stat-label{font-size:11.5px; color:var(--ink-soft); letter-spacing:0.5px;}
+  .stat-value{font-family:'Shippori Mincho', serif; font-size:19px; color:var(--pine-deep); margin-top:2px;}
+
+  table.settle-table{width:100%; border-collapse:collapse; font-size:12.5px; min-width:920px;}
+  table.settle-table th{
+    position:sticky; top:0; background:var(--paper-deep); font-size:11px; color:var(--ink-soft);
+    font-weight:500; padding:7px 5px; border-bottom:1px solid var(--line); text-align:center; white-space:nowrap;
+  }
+  table.settle-table td{
+    border-bottom:1px solid var(--line); padding:3px 4px; text-align:center; vertical-align:middle;
+  }
+  table.settle-table td.org-cell{text-align:left; font-size:12.5px; max-width:160px;}
+  table.settle-table td.readonly-cell{color:var(--ink-soft); font-size:12px; white-space:nowrap;}
+  table.settle-table input[type=text], table.settle-table input[type=number], table.settle-table select{
+    width:100%; border:1px solid transparent; background:transparent; padding:4px 3px;
+    font-family:'Noto Sans TC', sans-serif; font-size:12px; border-radius:3px; color:var(--ink); text-align:center;
+  }
+  table.settle-table td.org-cell input{text-align:left;}
+  table.settle-table input:hover, table.settle-table select:hover{border-color:var(--line);}
+  table.settle-table input:focus, table.settle-table select:focus{
+    border-color:var(--pine); background:#fff; outline:none;
+  }
+  table.settle-table input[type=checkbox]{width:auto; margin:0 auto; display:block;}
+  table.settle-table tr.row-done{background:#eaf3ec;}
+  table.settle-table tr.row-reject{background:#faeae6;}
+  table.settle-table tr.row-pending{background:#fbf6e8;}
+  table.settle-table tr:hover{filter:brightness(0.98);}
+  table.settle-table select.status-select option[value="結案"]{color:var(--ok);}
+  table.settle-table select.status-select option[value="退件"]{color:var(--warn);}
 </style>
 </head>
 <body>
@@ -212,46 +247,39 @@
   <!-- ===================== 核銷 TAB ===================== -->
   <section id="tab-settle" style="display:none;">
     <div class="card">
-      <h2>搜尋案件</h2>
-      <div class="hint">用序號、協會名稱或統編搜尋，找到後登記核銷狀態。</div>
-      <div class="search-box">
-        <input type="text" id="searchInput" placeholder="例如：南投縣人文美學協會 / 115-001 / 39926628">
+      <h2>核銷總覽</h2>
+      <div class="hint">直接在表格上登記核銷狀態，跟 Excel 一樣邊看邊改，改了就自動存檔。</div>
+      <div class="stat-bar">
+        <div class="stat-box"><div class="stat-label">總件數</div><div class="stat-value" id="stat_total">0</div></div>
+        <div class="stat-box"><div class="stat-label">結案</div><div class="stat-value" id="stat_done">0</div></div>
+        <div class="stat-box"><div class="stat-label">核定總金額</div><div class="stat-value" id="stat_approved">0</div></div>
+        <div class="stat-box"><div class="stat-label">餘額</div><div class="stat-value" id="stat_balance">0</div></div>
       </div>
-      <div id="searchResults"></div>
-    </div>
-
-    <div class="card" id="settleCard" style="display:none;">
-      <h2 id="settleOrgTitle"></h2>
-      <div class="hint" id="settleCaseInfo"></div>
-      <div class="divider"></div>
-      <div class="row">
-        <div><label>報銷單號</label><input type="text" id="s_receiptNo" placeholder="FI001000002020637"></div>
-        <div><label>狀態</label>
-          <select id="s_status">
-            <option value="">請選擇</option>
+      <div class="row" style="margin-top:14px;">
+        <div style="flex:2"><label>搜尋（單位／序號／統編）</label><input type="text" id="searchInput" placeholder="例如：南投縣人文美學協會 / 115-001 / 39926628"></div>
+        <div>
+          <label>狀態篩選</label>
+          <select id="statusFilter">
+            <option value="">全部</option>
+            <option value="__blank">尚未登記</option>
             <option value="審核中">審核中</option>
+            <option value="補件中">補件中</option>
             <option value="結案">結案</option>
             <option value="退件">退件</option>
-            <option value="補件中">補件中</option>
           </select>
         </div>
       </div>
-      <div class="row">
-        <div><label>過帳日期</label><input type="text" id="s_postDate" placeholder="115/3/30"></div>
-        <div><label>核銷金額</label><input type="number" id="s_settleAmount"></div>
+      <div class="divider"></div>
+      <div style="overflow-x:auto;">
+        <table class="settle-table">
+          <thead><tr>
+            <th>序號</th><th>申請單位</th><th>核定金額</th><th>印花</th><th>報銷單號</th>
+            <th>狀態</th><th>過帳日期</th><th>核銷金額</th>
+            <th>CGSS<br>核銷</th><th>所得稅<br>財產課</th><th>睦鄰<br>系統</th><th>備註</th>
+          </tr></thead>
+          <tbody id="settleTableBody"></tbody>
+        </table>
       </div>
-      <div class="row">
-        <label class="checkline"><input type="checkbox" id="s_cgssSettle"> 給會計 CGSS 核銷</label>
-        <label class="checkline"><input type="checkbox" id="s_incomeTax"> 所得稅給財產課</label>
-        <label class="checkline"><input type="checkbox" id="s_neighborSettle"> 睦鄰系統核銷</label>
-      </div>
-      <label>備註（例如退件原因）</label>
-      <textarea id="s_notes" placeholder="單據金額與核定金額不符，請協會補正..."></textarea>
-      <div class="grid-actions">
-        <button class="btn" id="btnSaveSettle">💾 儲存核銷狀態</button>
-        <button class="btn secondary" id="btnCancelSettle">取消</button>
-      </div>
-      <div id="settleStatus"></div>
     </div>
   </section>
 
@@ -327,6 +355,7 @@ document.querySelectorAll('#tabs button').forEach(btn=>{
       document.getElementById('tab-'+t).style.display = (t===btn.dataset.tab)?'block':'none';
     });
     if(btn.dataset.tab==='overview') renderOverview();
+    if(btn.dataset.tab==='settle') renderSettleTable();
     if(btn.dataset.tab==='settings') document.getElementById('settingsCount').textContent = cases.length;
   });
 });
@@ -781,70 +810,89 @@ document.getElementById('btnSaveCase').addEventListener('click', ()=>{
 
 // ---------- 核銷 Tab ----------
 const searchInput = document.getElementById('searchInput');
-searchInput.addEventListener('input', ()=>renderSearch(searchInput.value.trim()));
+const statusFilter = document.getElementById('statusFilter');
+searchInput.addEventListener('input', renderSettleTable);
+statusFilter.addEventListener('change', renderSettleTable);
 
-function renderSearch(q){
-  const box = document.getElementById('searchResults');
-  if(!q){ box.innerHTML=''; return; }
-  const matches = cases.filter(c=>
-    (c.orgName||'').includes(q) || (c.serial||'').includes(q) || (String(c.taxId)||'').includes(q) || (c.activityName||'').includes(q)
-  ).slice(0,20);
-  if(!matches.length){ box.innerHTML = '<div class="hint">找不到符合的案件</div>'; return; }
-  box.innerHTML = matches.map(c=>{
-    const st = c.settlement && c.settlement.status;
-    const tagClass = st==='結案'?'done':(st==='退件'?'reject':'pending');
-    return `<div class="result-item" data-serial="${c.serial}">
-      <div class="serial">${c.serial} ${st?`<span class="tag ${tagClass}">${st}</span>`:''}</div>
-      <div class="org">${c.orgName}</div>
-      <div class="meta">${c.activityName||''} · 核定 ${c.approvedAmount||'—'} 元</div>
-    </div>`;
+function fmtMoney(n){
+  const v = parseFloat(n);
+  return isNaN(v) ? 0 : v;
+}
+
+function renderStats(){
+  const total = cases.length;
+  const done = cases.filter(c=>c.settlement && c.settlement.status==='結案').length;
+  const totalApproved = cases.reduce((sum,c)=>sum+fmtMoney(c.approvedAmount),0);
+  const totalSettled = cases.reduce((sum,c)=>sum+fmtMoney(c.settlement&&c.settlement.settleAmount),0);
+  document.getElementById('stat_total').textContent = total;
+  document.getElementById('stat_done').textContent = done;
+  document.getElementById('stat_approved').textContent = totalApproved.toLocaleString();
+  document.getElementById('stat_balance').textContent = (totalApproved-totalSettled).toLocaleString();
+}
+
+function rowClassFor(status){
+  if(status==='結案') return 'row-done';
+  if(status==='退件') return 'row-reject';
+  if(status==='審核中'||status==='補件中') return 'row-pending';
+  return '';
+}
+
+function renderSettleTable(){
+  renderStats();
+  const q = searchInput.value.trim();
+  const statusQ = statusFilter.value;
+  const tbody = document.getElementById('settleTableBody');
+  let list = cases.filter(c=>
+    !q || (c.orgName||'').includes(q) || (c.serial||'').includes(q) || (String(c.taxId)||'').includes(q) || (c.activityName||'').includes(q)
+  );
+  if(statusQ==='__blank'){ list = list.filter(c=>!c.settlement || !c.settlement.status); }
+  else if(statusQ){ list = list.filter(c=>c.settlement && c.settlement.status===statusQ); }
+
+  if(!list.length){ tbody.innerHTML = '<tr><td colspan="12" class="hint" style="padding:16px;">找不到符合條件的案件</td></tr>'; return; }
+
+  tbody.innerHTML = list.map(c=>{
+    const s = c.settlement || {};
+    const rc = rowClassFor(s.status);
+    const statusOptions = ['','審核中','補件中','結案','退件'].map(opt=>
+      `<option value="${opt}" ${s.status===opt?'selected':''}>${opt||'請選擇'}</option>`
+    ).join('');
+    return `<tr class="${rc}" data-serial="${escAttr(c.serial)}">
+      <td class="readonly-cell">${escHtml(c.serial)}</td>
+      <td class="org-cell">${escHtml(c.orgName)}</td>
+      <td class="readonly-cell">${c.approvedAmount?Number(c.approvedAmount).toLocaleString():'—'}</td>
+      <td><input type="text" data-field="stamp" value="${escAttr(s.stamp||'')}"></td>
+      <td><input type="text" data-field="receiptNo" value="${escAttr(s.receiptNo||'')}"></td>
+      <td><select data-field="status" class="status-select">${statusOptions}</select></td>
+      <td><input type="text" data-field="postDate" value="${escAttr(s.postDate||'')}" placeholder="115/3/30"></td>
+      <td><input type="number" data-field="settleAmount" value="${escAttr(s.settleAmount||'')}"></td>
+      <td><input type="checkbox" data-field="cgssSettle" ${s.cgssSettle?'checked':''}></td>
+      <td><input type="checkbox" data-field="incomeTax" ${s.incomeTax?'checked':''}></td>
+      <td><input type="checkbox" data-field="neighborSettle" ${s.neighborSettle?'checked':''}></td>
+      <td><input type="text" data-field="notes" value="${escAttr(s.notes||'')}" placeholder="備註"></td>
+    </tr>`;
   }).join('');
-  box.querySelectorAll('.result-item').forEach(el=>{
-    el.addEventListener('click', ()=>openSettle(el.dataset.serial));
-  });
 }
 
-function openSettle(serial){
-  currentSettleSerial = serial;
-  const c = cases.find(x=>x.serial===serial);
-  if(!c) return;
-  document.getElementById('settleCard').style.display='block';
-  document.getElementById('settleOrgTitle').textContent = `${c.serial}　${c.orgName}`;
-  document.getElementById('settleCaseInfo').textContent = `${c.activityName||''} ｜ 核定補助金額：${c.approvedAmount||'—'} 元 ｜ 統編：${c.taxId||'—'}`;
-  const s = c.settlement || {};
-  document.getElementById('s_receiptNo').value = s.receiptNo||'';
-  document.getElementById('s_status').value = s.status||'';
-  document.getElementById('s_postDate').value = s.postDate||'';
-  document.getElementById('s_settleAmount').value = s.settleAmount||'';
-  document.getElementById('s_cgssSettle').checked = !!s.cgssSettle;
-  document.getElementById('s_incomeTax').checked = !!s.incomeTax;
-  document.getElementById('s_neighborSettle').checked = !!s.neighborSettle;
-  document.getElementById('s_notes').value = s.notes||'';
-  document.getElementById('settleCard').scrollIntoView({behavior:'smooth'});
-}
+function escHtml(v){ return String(v??'').replace(/[&<>]/g, ch=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[ch])); }
+function escAttr(v){ return String(v??'').replace(/[&<>"']/g, ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch])); }
 
-document.getElementById('btnCancelSettle').addEventListener('click', ()=>{
-  document.getElementById('settleCard').style.display='none';
-  currentSettleSerial = null;
-});
-
-document.getElementById('btnSaveSettle').addEventListener('click', ()=>{
-  const idx = cases.findIndex(c=>c.serial===currentSettleSerial);
+document.getElementById('settleTableBody').addEventListener('change', e=>{
+  const field = e.target.dataset.field;
+  if(!field) return;
+  const tr = e.target.closest('tr');
+  const serial = tr.dataset.serial;
+  const idx = cases.findIndex(c=>c.serial===serial);
   if(idx<0) return;
-  cases[idx].settlement = {
-    receiptNo: document.getElementById('s_receiptNo').value.trim(),
-    status: document.getElementById('s_status').value,
-    postDate: document.getElementById('s_postDate').value.trim(),
-    settleAmount: document.getElementById('s_settleAmount').value,
-    cgssSettle: document.getElementById('s_cgssSettle').checked,
-    incomeTax: document.getElementById('s_incomeTax').checked,
-    neighborSettle: document.getElementById('s_neighborSettle').checked,
-    notes: document.getElementById('s_notes').value.trim()
-  };
+  const s = cases[idx].settlement || {};
+  if(e.target.type==='checkbox') s[field] = e.target.checked;
+  else s[field] = e.target.value;
+  cases[idx].settlement = s;
   saveCases(cases);
-  setStatus('settleStatus','核銷狀態已儲存 ✓','ok');
-  renderSearch(searchInput.value.trim());
-  setTimeout(()=>setStatus('settleStatus','',null), 1200);
+  if(field==='status'){
+    tr.className = rowClassFor(s.status);
+    renderStats();
+  }
+  if(field==='settleAmount'){ renderStats(); }
 });
 
 // ---------- 總覽 Tab ----------
@@ -865,7 +913,7 @@ function renderOverview(){
     tr.addEventListener('click', ()=>{
       document.querySelector('#tabs button[data-tab="settle"]').click();
       searchInput.value = tr.dataset.serial;
-      renderSearch(tr.dataset.serial);
+      renderSettleTable();
     });
   });
 }
@@ -880,7 +928,7 @@ document.getElementById('btnExportXlsx').addEventListener('click', ()=>{
     '負責人':c.responsible, '連絡人':c.contact, '連絡電話':c.phone,
     '通訊地址':c.mailAddress, '會址':c.orgAddress,
     'CGSS':c.cgss?'v':'', '睦鄰系統':c.neighborSystem?'v':'',
-    '報銷單號':c.settlement?c.settlement.receiptNo:'', '核銷狀態':c.settlement?c.settlement.status:'',
+    '印花':c.settlement?c.settlement.stamp:'', '報銷單號':c.settlement?c.settlement.receiptNo:'', '核銷狀態':c.settlement?c.settlement.status:'',
     '過帳日期':c.settlement?c.settlement.postDate:'', '核銷金額':c.settlement?c.settlement.settleAmount:'',
     '給會計cgss核銷':c.settlement&&c.settlement.cgssSettle?'v':'',
     '所得稅給財產課':c.settlement&&c.settlement.incomeTax?'v':'',
