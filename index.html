@@ -393,15 +393,64 @@ document.getElementById('btnExtract').addEventListener('click', async ()=>{
       headers:{ 'Content-Type':'application/json' },
       body: JSON.stringify({
         contents:[{ role:'user', parts }],
-        generationConfig:{ maxOutputTokens:1200, responseMimeType:'application/json' }
+        generationConfig:{
+          maxOutputTokens:4000,
+          responseMimeType:'application/json',
+          responseSchema:{
+            type:'OBJECT',
+            properties:{
+              month:{type:'STRING'},
+              docNumber:{type:'STRING'},
+              orgName:{type:'STRING'},
+              taxId:{type:'STRING'},
+              activityName:{type:'STRING'},
+              location:{type:'STRING'},
+              startDate:{type:'STRING'},
+              endDate:{type:'STRING'},
+              budgetAmount:{type:'STRING'},
+              ownFund:{type:'STRING'},
+              requestedAmount:{type:'STRING'},
+              approvedAmount:{type:'STRING'},
+              approvedDate:{type:'STRING'},
+              applyDate:{type:'STRING'},
+              responsible:{type:'STRING'},
+              contact:{type:'STRING'},
+              phone:{type:'STRING'},
+              mailAddress:{type:'STRING'},
+              orgAddress:{type:'STRING'}
+            },
+            required:[
+              'month','docNumber','orgName','taxId','activityName','location',
+              'startDate','endDate','budgetAmount','ownFund','requestedAmount',
+              'approvedAmount','approvedDate','applyDate','responsible','contact',
+              'phone','mailAddress','orgAddress'
+            ]
+          }
+        }
       })
     });
     const data = await resp.json();
     if(data.error){ throw new Error(data.error.message || 'API 錯誤'); }
     const candidate = data.candidates && data.candidates[0];
     if(!candidate){ throw new Error('沒有收到辨識結果，請確認金鑰或稍後再試。'); }
-    const text = candidate.content.parts.map(p=>p.text||'').join('\n').trim().replace(/^```json|```$/g,'').trim();
-    const parsed = JSON.parse(text);
+    if(candidate.finishReason && candidate.finishReason !== 'STOP'){
+      throw new Error('AI 回覆未完整結束（'+candidate.finishReason+'），請重新辨識。');
+    }
+    const text = (candidate.content?.parts || [])
+      .map(p=>p.text||'')
+      .join('')
+      .trim()
+      .replace(/^```(?:json)?\s*/i,'')
+      .replace(/```\s*$/,'')
+      .trim();
+    if(!text){ throw new Error('AI 沒有回傳可解析的內容。'); }
+    let parsed;
+    try{
+      parsed = JSON.parse(text);
+    }catch(parseErr){
+      console.error('Gemini 原始回覆：', text);
+      throw new Error('AI 回傳的 JSON 不完整，請重新辨識一次。');
+    }
     fillForm(parsed);
     setStatus('extractStatus','辨識完成，請核對下方欄位後儲存。','ok');
     document.getElementById('formCard').style.display='block';
