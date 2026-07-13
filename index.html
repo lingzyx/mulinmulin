@@ -430,13 +430,29 @@
   <section id="tab-audit" style="display:none;">
     <div class="card narrow">
       <h2>AI 核銷文件檢查</h2>
-      <div class="hint">選擇已建檔案件，再上傳協會送來的核銷 PDF 或照片。AI 會依常見退件樣態檢查章戳、金額、日期、人數、印花、收據與缺漏文件，並產生補件文字。</div>
+      <div class="hint">選擇已建檔案件，再上傳協會送來的核銷 PDF 或照片。AI 會依「台電南投區處睦鄰補助案件檢核表」逐項檢查文件完整性、跨文件資料、章戳、銀行帳戶、金額、印花、支用單據及成果照片，並產生補件文字。</div>
 
       <label>對應案件</label>
       <select id="auditCaseSelect">
         <option value="">不綁定案件（僅檢查文件）</option>
       </select>
       <div class="hint" id="auditCaseHint" style="margin-top:5px;"></div>
+
+      <div class="row">
+        <div>
+          <label>團體類型（供條件式文件判斷）</label>
+          <select id="auditOrgType">
+            <option value="unknown">不確定／由文件判斷</option>
+            <option value="people">一般人民團體</option>
+            <option value="corporate">社團法人團體</option>
+            <option value="government">政府機關或學校</option>
+          </select>
+        </div>
+        <div style="display:flex; align-items:flex-end; padding-bottom:4px;">
+          <label class="checkline" style="margin:0;"><input type="checkbox" id="auditCompletePackage" checked> 本次上傳為完整核銷文件包</label>
+        </div>
+      </div>
+      <div class="hint">若只上傳部分文件，請取消勾選；否則未看到的必要文件會被列為疑似缺漏。</div>
 
       <label>核銷文件</label>
       <div class="file-drop" id="auditDropZone">
@@ -470,6 +486,17 @@
       </div>
 
       <div class="divider"></div>
+
+      <div class="audit-section-title">文件完整性</div>
+      <div id="auditDocumentChecklist"></div>
+
+      <div class="audit-section-title">跨文件資料一致性</div>
+      <div id="auditCrossChecks"></div>
+
+      <div class="audit-section-title">成果照片專項檢查</div>
+      <div id="auditPhotoReview"></div>
+
+      <div class="audit-section-title">逐項檢核結果</div>
       <div style="overflow-x:auto;">
         <table class="audit-table">
           <thead><tr><th>結果</th><th>類別</th><th>檢查項目</th><th>AI 判斷與依據</th><th>建議處理</th></tr></thead>
@@ -701,6 +728,50 @@ const AUDIT_RESPONSE_SCHEMA = {
   properties:{
     verdict:{type:'STRING', enum:['大致完整','需要補件','疑似重大問題','無法判斷']},
     summary:{type:'STRING'},
+    documentChecklist:{
+      type:'ARRAY',
+      items:{
+        type:'OBJECT',
+        properties:{
+          documentName:{type:'STRING'},
+          requirement:{type:'STRING', enum:['必要','條件式','參考']},
+          status:{type:'STRING', enum:['已提供','疑似缺少','不適用','無法判斷']},
+          foundIn:{type:'STRING'},
+          finding:{type:'STRING'},
+          suggestion:{type:'STRING'}
+        },
+        required:['documentName','requirement','status','foundIn','finding','suggestion']
+      }
+    },
+    crossChecks:{
+      type:'ARRAY',
+      items:{
+        type:'OBJECT',
+        properties:{
+          field:{type:'STRING'},
+          referenceValue:{type:'STRING'},
+          observedValues:{type:'STRING'},
+          status:{type:'STRING', enum:['通過','提醒','缺失','無法判斷']},
+          explanation:{type:'STRING'}
+        },
+        required:['field','referenceValue','observedValues','status','explanation']
+      }
+    },
+    photoReview:{
+      type:'OBJECT',
+      properties:{
+        photoCount:{type:'STRING'},
+        minimumRequired:{type:'STRING'},
+        eventScenePhotos:{type:'STRING'},
+        sponsorIdentification:{type:'STRING'},
+        energySavingBanner:{type:'STRING'},
+        dateAndStamp:{type:'STRING'},
+        participantCountExplanation:{type:'STRING'},
+        status:{type:'STRING', enum:['通過','提醒','缺失','無法判斷']},
+        explanation:{type:'STRING'}
+      },
+      required:['photoCount','minimumRequired','eventScenePhotos','sponsorIdentification','energySavingBanner','dateAndStamp','participantCountExplanation','status','explanation']
+    },
     checks:{
       type:'ARRAY',
       items:{
@@ -741,7 +812,7 @@ const AUDIT_RESPONSE_SCHEMA = {
     uncertainty:{type:'ARRAY', items:{type:'STRING'}},
     correctionNotice:{type:'STRING'}
   },
-  required:['verdict','summary','checks','amountChecks','stampTax','missingDocuments','uncertainty','correctionNotice']
+  required:['verdict','summary','documentChecklist','crossChecks','photoReview','checks','amountChecks','stampTax','missingDocuments','uncertainty','correctionNotice']
 };
 
 const RESPONSE_SCHEMA = {
@@ -1428,37 +1499,125 @@ function mimeForAuditFile(file){
 function buildAuditPrompt(c){
   const approved = fmtMoney(c&&c.approvedAmount);
   const expectedStamp = approved ? Math.floor(approved*0.004) : '';
+  const completePackage = document.getElementById('auditCompletePackage').checked;
+  const orgTypeValue = document.getElementById('auditOrgType').value;
+  const orgTypeText = ({unknown:'不確定，請由文件內容判斷',people:'一般人民團體',corporate:'社團法人團體',government:'政府機關或學校'})[orgTypeValue] || '不確定';
   const caseText = c ? `
-【系統既有案件資料】
+【系統既有案件資料／核准資料對照基準】
 序號：${c.serial||''}
 申請單位：${c.orgName||''}
 統一編號：${c.taxId||''}
 活動名稱：${c.activityName||''}
+活動地點：${c.location||''}
 活動日期：${c.startDate||''} 至 ${c.endDate||''}
 核定補助金額：${c.approvedAmount||''}
 負責人：${c.responsible||''}
+通訊地址：${c.mailAddress||''}
 會址：${c.orgAddress||''}
 依核定金額試算銀錢收據印花：${expectedStamp!==''?expectedStamp+'元':'無法試算'}
 ` : `
-【系統既有案件資料】未選擇案件，請只依附件判斷。
+【系統既有案件資料】未選擇案件，請只依附件互相比對；無法對照核准資料的項目標示「無法判斷」。
 `;
-  return `你是台灣電力公司南投區營業處睦鄰補助案件的核銷文件檢查助手。請逐頁閱讀所有附件，依下列規則做初步審核，並只回傳符合 JSON Schema 的資料。
+  return `你是台灣電力公司南投區營業處睦鄰補助案件的核銷文件檢查助手。請逐頁閱讀所有附件，依「台電南投區處睦鄰補助案件檢核表」做完整初步審核，並只回傳符合 JSON Schema 的資料。
 
-重要原則：
-1. 只能根據附件實際可見內容判斷，不可臆測。看不清楚、未提供或無法確認時，status 必須填「無法判斷」。
-2. 每個缺失都要寫明來源檔名、頁碼或可辨識的位置，以及實際看見的文字或數字。
-3. 不要因文件名稱看起來正確就判定通過，必須檢查內容。
-4. 若同一事項在不同文件矛盾，判定為「缺失」或「提醒」，並列出差異。
+【本次檢查設定】
+上傳範圍：${completePackage?'協會送來的完整核銷文件包；必要文件未出現時可列為「疑似缺少」':'僅上傳部分文件；未出現的文件不得直接判定缺失，應列「無法判斷」'}
+團體類型：${orgTypeText}
 ${caseText}
-【必查項目】
-A. 文件與章戳：領款收據、實際支用經費明細表、活動申請預算經費表的單位圖記、理事長/負責人、會計、承辦人等是否一致且完整；如理事長異動，是否有新任理事長當選證書。
-B. 領款收據：單位全名、會址、活動名稱、金額、理事長、會計、承辦人、日期是否完整；金額是否與核定/核銷資料一致。
-C. 印花：銀錢收據原則按收取金額 4‰ 計算，元以下尾數免計。辨識實貼印花金額或彙總繳納戳記；若為票據支付、彙總繳納或文件資訊不足，不要武斷判定不足，改列提醒或無法判斷。
-D. 實際支用經費明細：各項目是否有數量、單價、金額；加總是否正確；同一項目不當拆成多列；收據金額與明細金額不一致時是否有備註說明；聲明事項是否提及南投區營業處；表格是否缺少複核等必要欄位。
-E. 支用單據黏存單與收據：項目、用途、抬頭/受款人全名、日期是否完整；收據是否重複、相似或疑似同一筆；多張相似收據是否有說明；收據合計是否與明細一致。
-F. 活動成果：成果報告活動名稱、日期、地點、人數是否與申請及照片一致；照片張數是否足夠且每張有日期或日期章；人數差異是否有說明；布條上補助單位文字是否正確且清楚可辨識。
-G. 其他可能文件：切結書、供應商主檔/銀行帳戶或受捐助單位入戶申請書等，若附件或案件情境顯示需要但未見，列為疑似缺少文件；不要在完全無依據時一律判定缺少。
-H. 產生 correctionNotice：只列需要補件或人工確認的項目，文字要可直接貼給協會，語氣禮貌、具體，不要寫 AI 或模型。若沒有缺失，請寫「經初步檢查未發現明顯缺失，仍請依正式審核結果辦理。」`;
+【判斷原則】
+1. 只能根據附件實際可見內容判斷，不可臆測。看不清楚、影像模糊、印章姓名無法辨認、未提供核准資料或規定需人工確認時，status 必須填「無法判斷」。
+2. 「通過」只可用於內容清楚可見且與對照資料一致；欄位空白、資料矛盾、必要章戳明顯缺少或金額計算錯誤才列「缺失」；條件式風險列「提醒」。
+3. 每個缺失、提醒與無法判斷都要寫來源檔名、頁碼或可辨識位置，以及實際看見的文字、數字或影像狀況。
+4. 不得只因文件名稱正確就判定通過，必須檢查實際填寫內容、章戳、日期、附件與計算。
+5. 國字大寫金額須換算後與阿拉伯數字及核定金額比對；日期需辨識民國年與西元年並統一理解。
+6. 同一事項在不同文件不一致時，列「缺失」或「提醒」，並清楚列出各文件的值。
+7. 若文件屬空白範本或大部分必要欄位未填，不可視為已完成文件。
+8. checks 陣列必須逐項涵蓋下列所有標準，不得任意省略或合併；即使無法判斷也要回傳一筆。
+
+【文件完整性清單 documentChecklist】
+請逐一判斷：
+1. 受捐助單位入戶申請書（必要）
+2. 存摺影本（必要）
+3. 領款收據（必要）
+4. 切結書（必要）
+5. 實際支用經費明細表（必要）
+6. 支出憑證黏存單及支用單據正本（必要）
+7. 成果報告（必要）
+8. 成果照片（必要）
+9. 會址變更公文函、扣繳憑單或扣繳單位設立登記申請書等會址證明（地址不同或立案證書無詳細地址時才必要）
+10. 法人登記證書（社團法人團體才必要）
+若本次設定為部分文件，未看到的文件 status 填「無法判斷」而非「疑似缺少」。
+
+【跨文件一致性 crossChecks】
+至少比對：申請／請款單位全名、統一編號、活動名稱、活動日期、活動地點、核定／請款金額、負責人姓名、會址、銀行戶名、銀行名稱／代碼／帳號、各文件日期、成果照片日期。每個欄位要列出核准或系統參考值，以及附件中看到的值。
+
+【逐項標準 checks】
+一、受捐助單位入戶申請書
+1. 申請單位、活動名稱及補助金額國字大寫與核准資料一致。
+2. 銀行名稱、分行、代碼、帳號、戶名均已填妥，且與存摺影本一致。
+3. 受捐助單位名稱、負責人姓名已填，並有單位圖記與負責人章。
+4. 申請日期及聯絡電話等必要欄位是否完整。
+
+二、存摺影本
+5. 可清楚辨識銀行、分行、帳號與戶名，且與入戶申請書及領款收據一致。
+6. 存摺影本黏貼處或騎縫處有單位圖記與負責人章。
+
+三、領款收據
+7. 活動名稱與補助金額國字大寫和核准資料一致。
+8. 具領單位、銀行帳戶戶名、統一編號、單位地址、負責人、主辦會計、承辦人、支票寄達地點等欄位完整。
+9. 有負責人、主辦會計、承辦人印章及單位圖記；若國內團體確實未編制主辦會計，可免核章，但不清楚時列提醒或人工確認，不可直接判缺失。
+10. 收據出據日期完整；若超過活動結束後一個月，是否有加註合理說明。
+11. 會址與立案／系統資料不同時，是否附會址變更公文函、扣繳憑單或扣繳單位設立登記申請書等證明。
+12. 印花稅票原則按補助／收取金額千分之四計算，元以下尾數免計；辨識實貼印花或彙總繳納證明。檢核表要求印花不要直接黏貼於文件上；若看不清貼附方式或屬票據支付、彙總繳納，列提醒或無法判斷。
+
+四、切結書
+13. 活動日期與活動名稱和核准資料一致。
+14. 單位名稱、負責人、地址及日期等資料完整。
+15. 有單位圖記與負責人章。
+
+五、實際支用經費明細表
+16. 請款單位、活動名稱、請款總金額國字大寫與核准資料一致。
+17. 經費來源已完整列出所有補助機關、民間補助及自有款，無漏列或互相矛盾。
+18. 每一支用項目均有項目、數量、單位、單價、金額，數量×單價=金額，各列及合計計算正確。
+19. 支用項目、品名、數量、單位、單價與所附發票／收據一致；有差額時已敘明原因。
+20. 經費來源合計、全部支用合計、請款總金額及支用單據合計之間關係合理且一致。
+21. 聲明事項與申請情形相符，尤其是否清楚說明向台電南投區營業處申請及其他補助來源。
+22. 有承辦人、複核、主辦會計、負責人章及單位圖記；若特定欄位依法免核章，需有合理依據。
+
+六、支出憑證黏存單及支用單據
+23. 已檢附與台電補助金額同額或以上的統一發票／收據正本；若為影本，是否註明「與正本相符」並蓋單位戳記或承辦人印章。
+24. 單據黏貼線或騎縫處有單位圖記或承辦人印章。
+25. 黏存單上的單據號碼、項目、金額及用途說明完整，且與所黏單據相符。
+26. 支用單據品名、數量、單價、金額與實際支用經費明細表一致。
+27. 支用單據日期清楚且不晚於活動日期；若規定或特殊情況不同，列提醒並說明需人工確認。
+28. 支用單據買受人為受補助單位完整全名，文字無塗改；若免開買受人或電子發票格式特殊，列提醒。
+29. 支用單據金額欄正確且無塗改，統一發票／收據必要章戳與商家資料可辨識。
+30. 是否有重複、相似、疑似同一交易拆單或多張相同商家／金額／日期單據；如有，是否附合理說明。
+
+七、成果報告
+31. 請款單位、活動名稱、活動日期、活動地點與核准資料一致。
+32. 參加對象、參加人數、活動成果說明及活動照片張數已填妥。
+33. 有單位圖記與負責人章。
+34. 若照片無法完整呈現參加人數，成果報告有說明，例如攝影角度、場地布局或人員流動等原因。
+
+八、成果照片 photoReview
+35. 現場及活動進行中的彩色照片至少四張，並檢查是否疑似重複、非本次活動或內容無法辨識。
+36. 至少一張照片可清楚辨識現場布條、背板或其他布置，內容包含主辦單位、活動名稱及「贊助單位：台灣電力公司」。
+37. 至少一張照片可清楚辨識宣導節能標語布條，且包含「台灣電力公司 廣告」。
+38. 每張照片日期與活動日期相符；若照片本身無日期，必須逐張標註日期，且每張日期旁有承辦人印章。
+39. 照片內容、現場人數與成果報告所填人數大致合理；無法完整呈現時是否已有說明。
+photoReview 要分別填寫照片張數、現場照片、贊助辨識、節能標語、日期與章、人數說明，不得只給總結。
+
+九、其他條件式文件
+40. 人民團體立案證書若無會址詳細地址，或各文件會址不同，是否附會址證明文件並蓋單位大小章。
+41. 社團法人團體是否附法人登記證書；非社團法人則標「不適用」。
+
+【金額與印花 amountChecks／stampTax】
+至少列出：核定金額與入戶申請書、領款收據、明細表請款總額的比對；支用明細加總；支用單據合計；經費來源合計；自有款與其他補助；印花應貼金額與可見實貼金額。無法辨識時不可填 0，應填「無法判斷」。
+
+【缺漏與補件文字】
+missingDocuments 只列確有依據的疑似缺少文件，並標註「必要」或「條件式」。uncertainty 列出影像不清、章戳需人工辨認、單據真偽、正本與否等 AI 無法可靠判斷事項。
+correctionNotice 只列「缺失」、「提醒」及必要的人工確認事項，文字要可直接貼給協會，語氣禮貌、具體、分點列出，不要提到 AI 或模型。若沒有明顯缺失，請寫「經初步檢查未發現明顯缺失，仍請依正式審核結果辦理。」`;
 }
 
 function parseGeminiJson(rawText){
@@ -1549,6 +1708,50 @@ function renderAuditResult(data){
   document.getElementById('auditWarnCount').textContent=count('提醒');
   document.getElementById('auditFailCount').textContent=count('缺失');
   document.getElementById('auditUnknownCount').textContent=count('無法判斷');
+
+  const docItems=Array.isArray(data.documentChecklist)?data.documentChecklist:[];
+  const docStatusClass=status=>{
+    if(status==='已提供' || status==='不適用') return 'pass';
+    if(status==='疑似缺少') return 'fail';
+    return 'unknown';
+  };
+  document.getElementById('auditDocumentChecklist').innerHTML=docItems.length?`<div style="overflow-x:auto;"><table>
+    <thead><tr><th>文件</th><th>需求</th><th>結果</th><th>辨識位置</th><th>判斷</th><th>建議</th></tr></thead>
+    <tbody>${docItems.map(item=>`<tr>
+      <td>${escHtml(item.documentName||'')}</td>
+      <td>${escHtml(item.requirement||'')}</td>
+      <td><span class="audit-status ${docStatusClass(item.status)}">${escHtml(item.status||'無法判斷')}</span></td>
+      <td>${escHtml(item.foundIn||'—')}</td>
+      <td>${escHtml(item.finding||'')}</td>
+      <td>${escHtml(item.suggestion||'')}</td>
+    </tr>`).join('')}</tbody>
+  </table></div>`:'<div class="audit-empty">AI 未回傳文件完整性清單。</div>';
+
+  const crossItems=Array.isArray(data.crossChecks)?data.crossChecks:[];
+  document.getElementById('auditCrossChecks').innerHTML=crossItems.length?`<div style="overflow-x:auto;"><table>
+    <thead><tr><th>比對欄位</th><th>核准／參考值</th><th>附件辨識值</th><th>結果</th><th>說明</th></tr></thead>
+    <tbody>${crossItems.map(item=>`<tr>
+      <td>${escHtml(item.field||'')}</td>
+      <td>${escHtml(item.referenceValue||'—')}</td>
+      <td>${escHtml(item.observedValues||'—')}</td>
+      <td><span class="audit-status ${auditStatusClass(item.status)}">${escHtml(item.status||'無法判斷')}</span></td>
+      <td>${escHtml(item.explanation||'')}</td>
+    </tr>`).join('')}</tbody>
+  </table></div>`:'<div class="audit-empty">沒有可顯示的跨文件比對結果。</div>';
+
+  const photo=data.photoReview||{};
+  const photoRows=[
+    ['照片張數',photo.photoCount,`至少 ${photo.minimumRequired||'4 張'}`],
+    ['現場及進行中照片',photo.eventScenePhotos,'應包含現場及活動進行中照片'],
+    ['主辦／活動／贊助單位辨識',photo.sponsorIdentification,'至少一張可辨識主辦單位、活動名稱、贊助單位：台灣電力公司'],
+    ['節能宣導布條',photo.energySavingBanner,'至少一張可辨識節能標語及「台灣電力公司 廣告」'],
+    ['日期與承辦人章',photo.dateAndStamp,'每張日期須與活動日相符；無日期時逐張標註並蓋承辦人章'],
+    ['參加人數說明',photo.participantCountExplanation,'照片無法完整呈現人數時應附說明']
+  ];
+  document.getElementById('auditPhotoReview').innerHTML=Object.keys(photo).length?`<div style="overflow-x:auto;"><table>
+    <thead><tr><th>項目</th><th>辨識結果</th><th>檢核標準</th></tr></thead>
+    <tbody>${photoRows.map(row=>`<tr><td>${escHtml(row[0])}</td><td>${escHtml(row[1]||'無法判斷')}</td><td>${escHtml(row[2])}</td></tr>`).join('')}</tbody>
+  </table></div><div class="status-msg ${photo.status==='缺失'?'err':(photo.status==='通過'?'ok':'info')}" style="margin-top:8px;"><b>${escHtml(photo.status||'無法判斷')}</b>：${escHtml(photo.explanation||'')}</div>`:'<div class="audit-empty">沒有可顯示的成果照片檢查結果。</div>';
 
   const tbody=document.getElementById('auditChecksBody');
   tbody.innerHTML=checks.length?checks.map(item=>`<tr>
