@@ -214,6 +214,17 @@
     padding:9px 11px; border-radius:5px; font-size:12.5px; line-height:1.65; margin-top:12px;
   }
   #auditCorrectionNotice{min-height:150px; line-height:1.7;}
+  #auditCaseSuggestions{margin-top:8px; display:flex; flex-direction:column; gap:6px;}
+  .audit-case-search-row{display:flex; gap:8px; align-items:flex-end;}
+  .audit-case-search-row input{flex:1;}
+  .audit-case-selected{
+    display:flex; justify-content:space-between; align-items:center; gap:10px;
+    padding:10px 12px; margin-top:8px; border:1px solid var(--pine);
+    border-radius:5px; background:#eef2ee;
+  }
+  .audit-case-selected-main{min-width:0;}
+  .audit-case-selected-title{font-size:13.5px; font-weight:500; color:var(--pine-deep);}
+  .audit-case-selected-meta{font-size:11.5px; color:var(--ink-soft); margin-top:2px;}
 
 
   /* 備份提醒與安全快照 */
@@ -433,9 +444,19 @@
       <div class="hint">選擇已建檔案件，再上傳協會送來的核銷 PDF 或照片。AI 會依「台電南投區處睦鄰補助案件檢核表」逐項檢查文件完整性、跨文件資料、章戳、銀行帳戶、金額、印花、支用單據及成果照片，並產生補件文字。</div>
 
       <label>對應案件</label>
-      <select id="auditCaseSelect">
-        <option value="">不綁定案件（僅檢查文件）</option>
-      </select>
+      <div class="audit-case-search-row">
+        <input type="text" id="auditCaseSearchInput" placeholder="輸入序號、申請單位、統編或活動名稱" autocomplete="off">
+        <button type="button" class="btn secondary small" id="btnClearAuditCase" disabled>清除對應</button>
+      </div>
+      <input type="hidden" id="auditCaseSerial" value="">
+      <div id="auditCaseSuggestions"></div>
+      <div class="audit-case-selected" id="auditSelectedCase" style="display:none;">
+        <div class="audit-case-selected-main">
+          <div class="audit-case-selected-title" id="auditSelectedCaseTitle"></div>
+          <div class="audit-case-selected-meta" id="auditSelectedCaseMeta"></div>
+        </div>
+        <button type="button" class="btn secondary small" id="btnChangeAuditCase">更換</button>
+      </div>
       <div class="hint" id="auditCaseHint" style="margin-top:5px;"></div>
 
       <div class="row">
@@ -1387,7 +1408,11 @@ document.getElementById('settleTableBody').addEventListener('change', e=>{
 
 
 // ---------- AI 核銷文件檢查 ----------
-const auditCaseSelect = document.getElementById('auditCaseSelect');
+const auditCaseSearchInput = document.getElementById('auditCaseSearchInput');
+const auditCaseSerialInput = document.getElementById('auditCaseSerial');
+const auditCaseSuggestions = document.getElementById('auditCaseSuggestions');
+const btnClearAuditCase = document.getElementById('btnClearAuditCase');
+const btnChangeAuditCase = document.getElementById('btnChangeAuditCase');
 const auditDropZone = document.getElementById('auditDropZone');
 const auditFileInput = document.getElementById('auditFileInput');
 const btnRunAudit = document.getElementById('btnRunAudit');
@@ -1403,26 +1428,118 @@ function localDateTimeText(){
   return `${d.getFullYear()}/${pad(d.getMonth()+1)}/${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
 }
 
+function normalizeAuditSearch(value){
+  return String(value || '').trim().toLocaleLowerCase('zh-Hant');
+}
+
+function getSelectedAuditCase(){
+  return cases.find(item=>item.serial===auditCaseSerialInput.value) || null;
+}
+
 function renderAuditCaseOptions(){
-  const old = auditCaseSelect.value;
-  const sorted = [...cases].sort((a,b)=>String(a.serial||'').localeCompare(String(b.serial||''), 'zh-Hant', {numeric:true}));
-  auditCaseSelect.innerHTML = '<option value="">不綁定案件（僅檢查文件）</option>' + sorted.map(c=>
-    `<option value="${escAttr(c.serial)}">${escHtml(c.serial)}｜${escHtml(c.orgName||'未填單位')}｜${escHtml(c.activityName||'未填活動')}</option>`
-  ).join('');
-  if(sorted.some(c=>c.serial===old)) auditCaseSelect.value = old;
+  const selected = getSelectedAuditCase();
+  if(auditCaseSerialInput.value && !selected){
+    auditCaseSerialInput.value = '';
+    auditCaseSearchInput.value = '';
+  }
+  renderAuditCaseSuggestions();
   updateAuditCaseHint();
 }
 
-function updateAuditCaseHint(){
-  const c = cases.find(item=>item.serial===auditCaseSelect.value);
-  const hint = document.getElementById('auditCaseHint');
-  if(!c){ hint.textContent = '未選案件時，AI 只能依上傳文件進行檢查，無法對照核定金額與既有案件資料。'; return; }
-  const latest = Array.isArray(c.auditChecks) && c.auditChecks.length ? c.auditChecks[0] : null;
-  const approved = c.approvedAmount ? Number(c.approvedAmount).toLocaleString()+' 元' : '未登記';
-  hint.textContent = `核定金額：${approved}` + (latest ? `｜最近檢查：${latest.checkedAtText||latest.checkedAt||'有紀錄'}` : '｜尚無 AI 檢查紀錄');
+function renderAuditCaseSuggestions(){
+  const q = normalizeAuditSearch(auditCaseSearchInput.value);
+  if(!q || auditCaseSerialInput.value){
+    auditCaseSuggestions.innerHTML = '';
+    return;
+  }
+
+  const matches = [...cases]
+    .filter(c=>[
+      c.serial, c.orgName, c.taxId, c.activityName, c.location,
+      c.responsible, c.contact
+    ].some(value=>normalizeAuditSearch(value).includes(q)))
+    .sort((a,b)=>String(a.serial||'').localeCompare(String(b.serial||''), 'zh-Hant', {numeric:true}))
+    .slice(0,10);
+
+  if(!matches.length){
+    auditCaseSuggestions.innerHTML = '<div class="hint" style="margin-top:7px;">找不到符合的已建檔案件。可改用序號、單位名稱、統編或活動名稱搜尋。</div>';
+    return;
+  }
+
+  auditCaseSuggestions.innerHTML = matches.map(c=>`
+    <div class="suggest-item audit-case-option" data-serial="${escAttr(c.serial)}">
+      <div class="s-main">
+        <div class="s-serial">${escHtml(c.serial)}</div>
+        <div class="s-org">${escHtml(c.orgName||'未填單位')}</div>
+        <div class="s-meta">${escHtml(c.activityName||'未填活動')} · 統編 ${escHtml(c.taxId||'—')} · 核定 ${c.approvedAmount?Number(c.approvedAmount).toLocaleString():'—'} 元</div>
+      </div>
+      <button class="s-add" type="button">選擇</button>
+    </div>`).join('');
+
+  auditCaseSuggestions.querySelectorAll('.audit-case-option').forEach(el=>{
+    el.addEventListener('click', ()=>selectAuditCase(el.dataset.serial));
+  });
 }
 
-auditCaseSelect.addEventListener('change', updateAuditCaseHint);
+function selectAuditCase(serial){
+  const c = cases.find(item=>item.serial===serial);
+  if(!c) return;
+  auditCaseSerialInput.value = c.serial;
+  auditCaseSearchInput.value = '';
+  auditCaseSuggestions.innerHTML = '';
+  updateAuditCaseHint();
+}
+
+function clearAuditCaseSelection(focusSearch=false){
+  auditCaseSerialInput.value = '';
+  auditCaseSearchInput.value = '';
+  auditCaseSuggestions.innerHTML = '';
+  updateAuditCaseHint();
+  if(focusSearch) auditCaseSearchInput.focus();
+}
+
+function updateAuditCaseHint(){
+  const c = getSelectedAuditCase();
+  const hint = document.getElementById('auditCaseHint');
+  const selectedBox = document.getElementById('auditSelectedCase');
+  const selectedTitle = document.getElementById('auditSelectedCaseTitle');
+  const selectedMeta = document.getElementById('auditSelectedCaseMeta');
+
+  if(!c){
+    selectedBox.style.display = 'none';
+    btnClearAuditCase.disabled = true;
+    hint.textContent = '尚未選擇案件。未綁定案件時，AI 仍可檢查文件，但無法對照核定金額與已建檔資料。';
+    return;
+  }
+
+  const latest = Array.isArray(c.auditChecks) && c.auditChecks.length ? c.auditChecks[0] : null;
+  const approved = c.approvedAmount ? Number(c.approvedAmount).toLocaleString()+' 元' : '未登記';
+  selectedTitle.textContent = `${c.serial}｜${c.orgName||'未填單位'}`;
+  selectedMeta.textContent = `${c.activityName||'未填活動'}｜核定金額：${approved}`;
+  selectedBox.style.display = 'flex';
+  btnClearAuditCase.disabled = false;
+  hint.textContent = latest ? `最近檢查：${latest.checkedAtText||latest.checkedAt||'有紀錄'}` : '此案件尚無 AI 檢查紀錄。';
+}
+
+auditCaseSearchInput.addEventListener('input', ()=>{
+  if(auditCaseSerialInput.value) auditCaseSerialInput.value = '';
+  updateAuditCaseHint();
+  renderAuditCaseSuggestions();
+});
+auditCaseSearchInput.addEventListener('focus', renderAuditCaseSuggestions);
+auditCaseSearchInput.addEventListener('keydown', e=>{
+  if(e.key==='Escape'){
+    auditCaseSuggestions.innerHTML = '';
+    auditCaseSearchInput.blur();
+  }
+});
+btnClearAuditCase.addEventListener('click', ()=>clearAuditCaseSelection(true));
+btnChangeAuditCase.addEventListener('click', ()=>clearAuditCaseSelection(true));
+document.addEventListener('click', e=>{
+  if(!e.target.closest('#auditCaseSuggestions') && e.target!==auditCaseSearchInput){
+    auditCaseSuggestions.innerHTML = '';
+  }
+});
 
 auditDropZone.addEventListener('click', ()=>{ if(!auditRunning) auditFileInput.click(); });
 auditDropZone.addEventListener('dragover', e=>{ e.preventDefault(); if(!auditRunning) auditDropZone.classList.add('drag'); });
@@ -1640,7 +1757,7 @@ btnRunAudit.addEventListener('click', async ()=>{
   if(!apiKey){ setStatus('auditStatus','請先到「設定」頁輸入 Gemini API 金鑰。','err'); return; }
   if(!auditFiles.length || auditRunning) return;
 
-  auditRunning=true; currentAuditResult=null; currentAuditCaseSerial=auditCaseSelect.value;
+  auditRunning=true; currentAuditResult=null; currentAuditCaseSerial=auditCaseSerialInput.value;
   btnRunAudit.textContent='AI 檢查中…'; updateAuditControls();
   document.getElementById('auditResultCard').style.display='none';
   setStatus('auditSaveStatus','',null);
