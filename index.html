@@ -1617,7 +1617,13 @@ photoReview 要分別填寫照片張數、現場照片、贊助辨識、節能�
 
 【缺漏與補件文字】
 missingDocuments 只列確有依據的疑似缺少文件，並標註「必要」或「條件式」。uncertainty 列出影像不清、章戳需人工辨認、單據真偽、正本與否等 AI 無法可靠判斷事項。
-correctionNotice 只列「缺失」、「提醒」及必要的人工確認事項，文字要可直接貼給協會，語氣禮貌、具體、分點列出，不要提到 AI 或模型。若沒有明顯缺失，請寫「經初步檢查未發現明顯缺失，仍請依正式審核結果辦理。」`;
+correctionNotice 只列「缺失」、「提醒」及必要的人工確認事項，文字要可直接貼給協會，語氣禮貌、具體、分點列出，不要提到 AI 或模型。若沒有明顯缺失，請寫「經初步檢查未發現明顯缺失，仍請依正式審核結果辦理。」
+
+【輸出長度要求】
+- checks 仍須完整回傳 41 項，但每一項文字應簡潔，避免重複規則原文。
+- finding、evidence、explanation、suggestion 各以 80 個中文字內為原則。
+- correctionNotice 以 1200 個中文字內為原則。
+- 只輸出 JSON，不要輸出推理過程、Markdown 或額外說明。`;
 }
 
 function parseGeminiJson(rawText){
@@ -1652,7 +1658,12 @@ btnRunAudit.addEventListener('click', async ()=>{
 
     const requestBody={
       contents:[{role:'user',parts}],
-      generationConfig:{maxOutputTokens:12000,responseMimeType:'application/json',responseSchema:AUDIT_RESPONSE_SCHEMA}
+      generationConfig:{
+        maxOutputTokens:32000,
+        thinkingConfig:{thinkingLevel:'LOW'},
+        responseMimeType:'application/json',
+        responseSchema:AUDIT_RESPONSE_SCHEMA
+      }
     };
 
     let responseData=null;
@@ -1676,9 +1687,50 @@ btnRunAudit.addEventListener('click', async ()=>{
       }
       responseData=data; break;
     }
-    const candidate=responseData?.candidates?.[0];
+    let candidate=responseData?.candidates?.[0];
     if(!candidate) throw new Error('沒有收到檢查結果，請確認 API 金鑰或稍後再試。');
-    if(candidate.finishReason && candidate.finishReason!=='STOP') throw new Error(`AI 回覆未完整結束（${candidate.finishReason}）。`);
+
+    // 完整檢核包含 41 項規則，Gemini 偶爾會因思考與 JSON 輸出過長而達到 token 上限。
+    // 遇到 MAX_TOKENS 時，自動改用極低思考量與較高輸出上限再執行一次，不必由使用者重新上傳。
+    if(candidate.finishReason==='MAX_TOKENS'){
+      setStatus('auditStatus','檢核項目較多，正在自動精簡結果並重試…','info');
+      const retryBody={
+        ...requestBody,
+        contents:[{
+          ...requestBody.contents[0],
+          parts:[
+            {
+              text:requestBody.contents[0].parts[0].text + `
+
+【輸出精簡要求】上一輪因輸出過長而中止。仍須完整回傳所有 41 項 checks，但每個 finding、evidence、explanation、suggestion 請各控制在 80 個中文字內；相同內容不要重複；correctionNotice 控制在 1200 個中文字內。只輸出 JSON。`
+            },
+            ...requestBody.contents[0].parts.slice(1)
+          ]
+        }],
+        generationConfig:{
+          ...requestBody.generationConfig,
+          maxOutputTokens:60000,
+          thinkingConfig:{thinkingLevel:'MINIMAL'}
+        }
+      };
+      const retryResp=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent?key=${encodeURIComponent(apiKey)}`,{
+        method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(retryBody)
+      });
+      const retryData=await retryResp.json();
+      if(!retryResp.ok || retryData.error){
+        throw new Error(retryData?.error?.message || `API 錯誤（${retryResp.status}）`);
+      }
+      responseData=retryData;
+      candidate=responseData?.candidates?.[0];
+      if(!candidate) throw new Error('重新檢查後仍未收到結果，請稍後再試。');
+    }
+
+    if(candidate.finishReason && candidate.finishReason!=='STOP'){
+      if(candidate.finishReason==='MAX_TOKENS'){
+        throw new Error('檢查結果仍超過輸出上限。請將文件分成兩批檢查，或只上傳一份整合後的 PDF 再試。');
+      }
+      throw new Error(`AI 回覆未完整結束（${candidate.finishReason}）。`);
+    }
     const raw=(candidate.content?.parts||[]).map(part=>part.text||'').join('').trim();
     if(!raw) throw new Error('AI 沒有回傳可解析的檢查內容。');
     currentAuditResult=parseGeminiJson(raw);
