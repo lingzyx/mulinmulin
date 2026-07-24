@@ -145,6 +145,16 @@
   }
   table.settle-table td.org-cell{text-align:left; font-size:12.5px; max-width:160px;}
   table.settle-table td.readonly-cell{color:var(--ink-soft); font-size:12px; white-space:nowrap;}
+  #recordsTable{table-layout:fixed;}
+  #recordsTable th:nth-child(6), #recordsTable td:nth-child(6),
+  #recordsTable th:nth-child(7), #recordsTable td:nth-child(7){width:76px;}
+  #recordsTable th:nth-child(1){width:64px;}
+  #recordsTable th:nth-child(3){width:90px;}
+  #recordsTable th:nth-child(8), #recordsTable th:nth-child(9), #recordsTable th:nth-child(10){width:88px;}
+  #recordsTable th:nth-child(11){width:76px;}
+  #recordsTable th:nth-child(12), #recordsTable th:nth-child(13){width:70px;}
+  #recordsTable th:nth-child(14){width:100px;}
+  #recordsTable th:nth-child(17){width:110px;}
   table.settle-table input[type=text], table.settle-table input[type=number], table.settle-table select{
     width:100%; border:1px solid transparent; background:transparent; padding:4px 3px;
     font-family:'Noto Sans TC', sans-serif; font-size:12px; border-radius:3px; color:var(--ink); text-align:center;
@@ -180,86 +190,6 @@
     background:none; border:none; color:var(--ink-soft); cursor:pointer; font-size:14px; padding:2px 6px;
   }
   .remove-btn:hover{color:var(--warn);}
-
-  /* AI 核銷文件檢查 */
-  .audit-file-list{display:grid; gap:7px; margin-top:10px;}
-  .audit-file-row{
-    display:flex; justify-content:space-between; align-items:center; gap:10px;
-    padding:9px 11px; border:1px solid var(--line); border-radius:5px; background:#fffefb;
-  }
-  .audit-file-name{font-size:13px; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
-  .audit-file-meta{font-size:11.5px; color:var(--ink-soft); white-space:nowrap;}
-  .audit-result-head{display:flex; align-items:flex-start; justify-content:space-between; gap:12px; flex-wrap:wrap;}
-  .audit-verdict{font-family:'Shippori Mincho', serif; font-size:20px; color:var(--pine-deep);}
-  .audit-summary-text{font-size:13.5px; color:var(--ink); line-height:1.7; margin-top:6px;}
-  .audit-status{
-    display:inline-block; min-width:62px; text-align:center; padding:3px 8px; border-radius:12px;
-    font-size:11.5px; font-weight:500; white-space:nowrap;
-  }
-  .audit-status.pass{background:#e3ede6; color:var(--ok);}
-  .audit-status.warn{background:#f2ead3; color:#8a6a1f;}
-  .audit-status.fail{background:#f6e2dc; color:var(--warn);}
-  .audit-status.unknown{background:#e8eef2; color:#31566d;}
-  table.audit-table{min-width:980px;}
-  table.audit-table th:nth-child(1){width:74px;}
-  table.audit-table th:nth-child(2){width:110px;}
-  table.audit-table th:nth-child(3){width:180px;}
-  table.audit-table td{line-height:1.6;}
-  .audit-evidence{font-size:11.5px; color:var(--ink-soft); margin-top:3px;}
-  .audit-section-title{font-size:14px; font-weight:500; color:var(--pine-deep); margin:16px 0 7px;}
-  .audit-list{margin:0; padding-left:20px; font-size:13px; line-height:1.8;}
-  .audit-empty{font-size:12.5px; color:var(--ink-soft);}
-  .audit-note{
-    background:#f2ead3; border:1px solid #dfd0a5; color:#6f581e;
-    padding:9px 11px; border-radius:5px; font-size:12.5px; line-height:1.65; margin-top:12px;
-  }
-  #auditCorrectionNotice{min-height:150px; line-height:1.7;}
-  #auditCaseSuggestions{margin-top:8px; display:flex; flex-direction:column; gap:6px;}
-  .audit-case-search-row{display:flex; gap:8px; align-items:flex-end;}
-  .audit-case-search-row input{flex:1;}
-  .audit-case-selected{
-    display:flex; justify-content:space-between; align-items:center; gap:10px;
-    padding:10px 12px; margin-top:8px; border:1px solid var(--pine);
-    border-radius:5px; background:#eef2ee;
-  }
-  .audit-case-selected-main{min-width:0;}
-  .audit-case-selected-title{font-size:13.5px; font-weight:500; color:var(--pine-deep);}
-  .audit-case-selected-meta{font-size:11.5px; color:var(--ink-soft); margin-top:2px;}
-
-
-  /* 備份提醒與安全快照 */
-  [hidden]{display:none !important;}
-  .backup-reminder{
-    position:sticky; top:0; z-index:30; display:flex; align-items:center; justify-content:center;
-    gap:18px; flex-wrap:wrap; padding:10px 16px; background:#fff4d9; color:#6f581e;
-    border-bottom:1px solid #dfd0a5; box-shadow:0 2px 8px rgba(43,42,37,.08);
-  }
-  .backup-reminder-text{display:flex; align-items:baseline; gap:9px; flex-wrap:wrap; font-size:13px; line-height:1.5;}
-  .backup-reminder-text strong{font-size:13.5px; color:#5f4812;}
-  .backup-reminder-actions{display:flex; gap:7px; flex-wrap:wrap;}
-  .backup-reminder .btn.secondary{background:#fffaf0;}
-  .backup-panel{
-    display:flex; justify-content:space-between; align-items:center; gap:14px; flex-wrap:wrap;
-    margin:12px 0 4px; padding:12px 14px; border:1px solid var(--line); border-radius:6px;
-    background:var(--paper-deep);
-  }
-  .backup-panel-main{min-width:220px; flex:1;}
-  .backup-panel-title{font-size:13.5px; font-weight:500; color:var(--pine-deep);}
-  .backup-panel-detail{font-size:12px; color:var(--ink-soft); margin-top:3px; line-height:1.6;}
-  .backup-indicator{display:inline-block; width:8px; height:8px; border-radius:50%; margin-right:6px; vertical-align:1px;}
-  .backup-indicator.safe{background:var(--ok);}
-  .backup-indicator.dirty{background:#c68b22;}
-  .backup-indicator.never{background:var(--warn);}
-  .backup-settings-grid{display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:12px;}
-  .backup-info-box{border:1px solid var(--line); border-radius:6px; padding:11px 12px; background:#fffefb;}
-  .backup-info-label{font-size:11.5px; color:var(--ink-soft);}
-  .backup-info-value{font-size:13px; color:var(--pine-deep); margin-top:3px; line-height:1.55;}
-  @media (max-width:680px){
-    .backup-reminder{justify-content:flex-start; gap:9px;}
-    .backup-reminder-actions{width:100%;}
-    .backup-settings-grid{grid-template-columns:1fr;}
-  }
-
 </style>
 </head>
 <body>
@@ -273,21 +203,9 @@
   <button data-tab="register" class="active">📄 核准文件建檔</button>
   <button data-tab="records">📁 已建檔案件</button>
   <button data-tab="settle">🔍 核銷查詢登錄</button>
-  <button data-tab="audit">🤖 AI 核銷文件檢查</button>
   <button data-tab="overview">📋 總覽 / 匯出</button>
   <button data-tab="settings">⚙️ 設定</button>
 </nav>
-
-<div id="backupReminder" class="backup-reminder" hidden role="status" aria-live="polite">
-  <div class="backup-reminder-text">
-    <strong id="backupReminderTitle">資料尚未備份</strong>
-    <span id="backupReminderDetail"></span>
-  </div>
-  <div class="backup-reminder-actions">
-    <button class="btn small" id="btnReminderBackup" type="button">⬇️ 立即下載備份</button>
-    <button class="btn secondary small" id="btnReminderLater" type="button">明天再提醒</button>
-  </div>
-</div>
 
 <main>
 
@@ -316,17 +234,13 @@
   <section id="tab-records" style="display:none;">
     <div class="card">
       <h2>已建檔案件 <span class="badge-count" id="recordsCount">0</span></h2>
-      <div class="hint">PDF 辨識完成、手動輸入或 Excel 大批匯入的案件資料都會列在這裡，可以搜尋、編輯或刪除。Excel 只會讀取下方表格標題列的欄位，其他欄位會自動忽略。</div>
+      <div class="hint">PDF 辨識完成、或手動輸入建檔後的案件資料都會列在這裡，可以搜尋、編輯或刪除。</div>
       <div class="row">
         <div style="flex:2"><label>搜尋（單位／序號／統編／活動名稱）</label><input type="text" id="recordsSearchInput" placeholder="例如：福德宮 / 115-007"></div>
-        <div style="display:flex; align-items:flex-end; gap:8px; flex-wrap:wrap;">
-          <button class="btn secondary" id="btnImportRecordsExcel">⬆️ 大批匯入 Excel</button>
-          <button class="btn secondary" id="btnDownloadRecordsTemplate">⬇️ 下載匯入範本</button>
+        <div style="display:flex; align-items:flex-end;">
           <button class="btn secondary" id="btnManualRecords">✏️ 新增手動案件</button>
-          <input type="file" id="recordsExcelInput" accept=".xlsx,.xls,.csv,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel,text/csv" style="display:none;">
         </div>
       </div>
-      <div id="recordsImportStatus"></div>
       <div class="divider"></div>
       <div style="overflow-x:auto;">
         <table class="settle-table" id="recordsTable">
@@ -436,127 +350,11 @@
     </div>
   </section>
 
-
-  <!-- ===================== AI 核銷檢查 TAB ===================== -->
-  <section id="tab-audit" style="display:none;">
-    <div class="card narrow">
-      <h2>AI 核銷文件檢查</h2>
-      <div class="hint">選擇已建檔案件，再上傳協會送來的核銷 PDF 或照片。AI 會依「台電南投區處睦鄰補助案件檢核表」逐項檢查文件完整性、跨文件資料、章戳、銀行帳戶、金額、印花、支用單據及成果照片，並產生補件文字。</div>
-
-      <label>對應案件</label>
-      <div class="audit-case-search-row">
-        <input type="text" id="auditCaseSearchInput" placeholder="輸入序號、申請單位、統編或活動名稱" autocomplete="off">
-        <button type="button" class="btn secondary small" id="btnClearAuditCase" disabled>清除對應</button>
-      </div>
-      <input type="hidden" id="auditCaseSerial" value="">
-      <div id="auditCaseSuggestions"></div>
-      <div class="audit-case-selected" id="auditSelectedCase" style="display:none;">
-        <div class="audit-case-selected-main">
-          <div class="audit-case-selected-title" id="auditSelectedCaseTitle"></div>
-          <div class="audit-case-selected-meta" id="auditSelectedCaseMeta"></div>
-        </div>
-        <button type="button" class="btn secondary small" id="btnChangeAuditCase">更換</button>
-      </div>
-      <div class="hint" id="auditCaseHint" style="margin-top:5px;"></div>
-
-      <div class="row">
-        <div>
-          <label>團體類型（供條件式文件判斷）</label>
-          <select id="auditOrgType">
-            <option value="unknown">不確定／由文件判斷</option>
-            <option value="people">一般人民團體</option>
-            <option value="corporate">社團法人團體</option>
-            <option value="government">政府機關或學校</option>
-          </select>
-        </div>
-        <div style="display:flex; align-items:flex-end; padding-bottom:4px;">
-          <label class="checkline" style="margin:0;"><input type="checkbox" id="auditCompletePackage" checked> 本次上傳為完整核銷文件包</label>
-        </div>
-      </div>
-      <div class="hint">若只上傳部分文件，請取消勾選；否則未看到的必要文件會被列為疑似缺漏。</div>
-
-      <label>核銷文件</label>
-      <div class="file-drop" id="auditDropZone">
-        點選或拖曳 PDF、JPG、PNG 到這裡<br>
-        <span style="font-size:11.5px;">最多 10 件，合計不超過 45 MB</span>
-      </div>
-      <input type="file" id="auditFileInput" accept="application/pdf,image/jpeg,image/png,.pdf,.jpg,.jpeg,.png" multiple style="display:none;">
-      <div id="auditFileList" class="audit-file-list"></div>
-
-      <div class="grid-actions">
-        <button class="btn" id="btnRunAudit" disabled>✨ 開始 AI 檢查</button>
-        <button class="btn secondary" id="btnClearAuditFiles" disabled>清除文件</button>
-      </div>
-      <div id="auditStatus"></div>
-      <div class="audit-note">AI 檢查是初步輔助，無法取代承辦人與會計的最終審核。看不清楚、文件未上傳或規定需人工判斷時，系統會標示「無法判斷」。</div>
-    </div>
-
-    <div class="card" id="auditResultCard" style="display:none;">
-      <div class="audit-result-head">
-        <div>
-          <h2>檢查結果</h2>
-          <div class="audit-verdict" id="auditVerdict"></div>
-          <div class="audit-summary-text" id="auditSummary"></div>
-        </div>
-        <div class="stat-bar" style="min-width:min(100%,480px); flex:1;">
-          <div class="stat-box"><div class="stat-label">通過</div><div class="stat-value" id="auditPassCount">0</div></div>
-          <div class="stat-box"><div class="stat-label">提醒</div><div class="stat-value" id="auditWarnCount">0</div></div>
-          <div class="stat-box"><div class="stat-label">缺失</div><div class="stat-value" id="auditFailCount">0</div></div>
-          <div class="stat-box"><div class="stat-label">待人工確認</div><div class="stat-value" id="auditUnknownCount">0</div></div>
-        </div>
-      </div>
-
-      <div class="divider"></div>
-
-      <div class="audit-section-title">文件完整性</div>
-      <div id="auditDocumentChecklist"></div>
-
-      <div class="audit-section-title">跨文件資料一致性</div>
-      <div id="auditCrossChecks"></div>
-
-      <div class="audit-section-title">成果照片專項檢查</div>
-      <div id="auditPhotoReview"></div>
-
-      <div class="audit-section-title">逐項檢核結果</div>
-      <div style="overflow-x:auto;">
-        <table class="audit-table">
-          <thead><tr><th>結果</th><th>類別</th><th>檢查項目</th><th>AI 判斷與依據</th><th>建議處理</th></tr></thead>
-          <tbody id="auditChecksBody"></tbody>
-        </table>
-      </div>
-
-      <div class="audit-section-title">金額與印花檢查</div>
-      <div id="auditAmountChecks"></div>
-
-      <div class="audit-section-title">疑似缺少文件</div>
-      <div id="auditMissingDocs"></div>
-
-      <div class="audit-section-title">待人工確認</div>
-      <div id="auditUncertainty"></div>
-
-      <label>AI 產生的補件通知文字</label>
-      <textarea id="auditCorrectionNotice"></textarea>
-      <div class="grid-actions">
-        <button class="btn secondary" id="btnCopyAuditNotice">複製補件文字</button>
-        <button class="btn secondary" id="btnSaveAuditRecord">儲存檢查紀錄</button>
-        <button class="btn" id="btnWriteAuditNotes">寫入核銷備註</button>
-      </div>
-      <div id="auditSaveStatus"></div>
-    </div>
-  </section>
-
   <!-- ===================== 總覽 TAB ===================== -->
   <section id="tab-overview" style="display:none;">
     <div class="card">
       <h2>全部案件 <span class="badge-count" id="overviewCount">0</span></h2>
       <div class="hint">點列可跳到核銷登錄。匯出的 Excel 欄位與原本睦鄰申請補助明細表相同。</div>
-      <div class="backup-panel">
-        <div class="backup-panel-main">
-          <div class="backup-panel-title" id="overviewBackupTitle">備份狀態</div>
-          <div class="backup-panel-detail" id="overviewBackupDetail">尚未讀取</div>
-        </div>
-        <button class="btn small" id="btnOverviewBackupNow" type="button">⬇️ 立即備份</button>
-      </div>
       <div class="grid-actions">
         <button class="btn" id="btnExportXlsx">⬇️ 匯出 Excel</button>
         <button class="btn secondary" id="btnExportBackup">⬇️ 備份 JSON</button>
@@ -593,35 +391,9 @@
       <div id="keyStatus"></div>
     </div>
     <div class="card narrow">
-      <h2>資料與備份</h2>
-      <div class="hint">目前共有 <b id="settingsCount">0</b> 筆案件資料，全部存在這台瀏覽器的本機儲存空間。只有下載到電腦的 JSON 備份，才能在清除瀏覽器資料或換電腦後還原。</div>
-
-      <div class="backup-settings-grid">
-        <div class="backup-info-box">
-          <div class="backup-info-label">外部 JSON 備份</div>
-          <div class="backup-info-value" id="settingsBackupStatus">尚未備份</div>
-        </div>
-        <div class="backup-info-box">
-          <div class="backup-info-label">最近安全快照</div>
-          <div class="backup-info-value" id="settingsSnapshotStatus">尚無快照</div>
-        </div>
-      </div>
-
-      <label>定期提醒間隔</label>
-      <select id="backupReminderDays">
-        <option value="1">每天提醒</option>
-        <option value="3">每 3 天提醒</option>
-        <option value="7">每 7 天提醒</option>
-        <option value="14">每 14 天提醒</option>
-      </select>
-      <div class="hint" style="margin-top:6px;">新增、編輯或核銷資料後會標示「尚未備份」。安全快照只存在本瀏覽器，清除網站資料時也會消失。</div>
-
-      <div class="grid-actions">
-        <button class="btn" id="btnSettingsBackupNow" type="button">⬇️ 立即下載 JSON</button>
-        <button class="btn secondary" id="btnRestoreSnapshot" type="button">↩️ 還原最近安全快照</button>
-        <button class="btn danger" id="btnWipeAll" type="button">🗑️ 清空全部資料</button>
-      </div>
-      <div id="backupActionStatus"></div>
+      <h2>資料</h2>
+      <div class="hint">目前共有 <b id="settingsCount">0</b> 筆案件資料，全部存在這台瀏覽器的本機儲存空間。清除瀏覽器資料或換電腦都不會保留，請定期用「總覽」頁的備份功能匯出 JSON。</div>
+      <button class="btn danger" id="btnWipeAll">🗑️ 清空全部資料</button>
     </div>
   </section>
 
@@ -631,76 +403,11 @@
 <script>
 const STORE_KEY = 'nl_subsidy_cases_v1';
 const APIKEY_KEY = 'nl_subsidy_gemini_apikey_v1';
-const BACKUP_META_KEY = 'nl_subsidy_backup_meta_v1';
-const SAFETY_SNAPSHOT_KEY = 'nl_subsidy_safety_snapshot_v1';
 const GEMINI_MODEL = 'gemini-3.5-flash';
 
 function loadCases(){ try{ return JSON.parse(localStorage.getItem(STORE_KEY) || '[]'); }catch(e){ return []; } }
+function saveCases(list){ localStorage.setItem(STORE_KEY, JSON.stringify(list)); }
 function getApiKey(){ return localStorage.getItem(APIKEY_KEY) || ''; }
-
-function loadBackupMeta(){
-  const defaults = {
-    lastBackupAt:'', lastDataChangeAt:'', dirty:false, changeCount:0,
-    reminderDays:7, snoozeUntil:0, lastSnapshotAt:''
-  };
-  try{
-    const stored = JSON.parse(localStorage.getItem(BACKUP_META_KEY) || '{}');
-    return {...defaults, ...stored};
-  }catch(e){ return defaults; }
-}
-
-let backupMeta = loadBackupMeta();
-
-function persistBackupMeta(){
-  try{ localStorage.setItem(BACKUP_META_KEY, JSON.stringify(backupMeta)); }catch(e){}
-}
-
-function parseStoredCases(raw){
-  try{
-    const parsed = JSON.parse(raw || '[]');
-    return Array.isArray(parsed) ? parsed : [];
-  }catch(e){ return []; }
-}
-
-function createSafetySnapshot(reason, data){
-  const snapshotCases = Array.isArray(data) ? data : [];
-  if(!snapshotCases.length) return false;
-  const snapshot = {createdAt:new Date().toISOString(), reason, cases:snapshotCases};
-  try{
-    localStorage.setItem(SAFETY_SNAPSHOT_KEY, JSON.stringify(snapshot));
-    backupMeta.lastSnapshotAt = snapshot.createdAt;
-    persistBackupMeta();
-    updateBackupUI();
-    return true;
-  }catch(e){
-    console.warn('建立安全快照失敗：', e);
-    return false;
-  }
-}
-
-function maybeCreateAutomaticSnapshot(previousRaw){
-  const previousCases = parseStoredCases(previousRaw);
-  if(!previousCases.length) return;
-  const last = backupMeta.lastSnapshotAt ? new Date(backupMeta.lastSnapshotAt).getTime() : 0;
-  if(!last || Date.now() - last >= 24 * 60 * 60 * 1000){
-    createSafetySnapshot('每日自動安全快照（修改前）', previousCases);
-  }
-}
-
-function markDataChanged(){
-  backupMeta.dirty = true;
-  backupMeta.changeCount = Number(backupMeta.changeCount || 0) + 1;
-  backupMeta.lastDataChangeAt = new Date().toISOString();
-  persistBackupMeta();
-  updateBackupUI();
-}
-
-function saveCases(list, options={}){
-  const previousRaw = localStorage.getItem(STORE_KEY) || '[]';
-  if(!options.skipSnapshot) maybeCreateAutomaticSnapshot(previousRaw);
-  localStorage.setItem(STORE_KEY, JSON.stringify(list));
-  if(!options.skipDirty) markDataChanged();
-}
 
 let cases = loadCases();
 let currentEditSerial = null;
@@ -711,14 +418,13 @@ document.querySelectorAll('#tabs button').forEach(btn=>{
   btn.addEventListener('click', ()=>{
     document.querySelectorAll('#tabs button').forEach(b=>b.classList.remove('active'));
     btn.classList.add('active');
-    ['register','records','settle','audit','overview','settings'].forEach(t=>{
+    ['register','records','settle','overview','settings'].forEach(t=>{
       document.getElementById('tab-'+t).style.display = (t===btn.dataset.tab)?'block':'none';
     });
     if(btn.dataset.tab==='overview') renderOverview();
     if(btn.dataset.tab==='records') renderRecordsTable();
     if(btn.dataset.tab==='settle') renderSettleTable();
-    if(btn.dataset.tab==='audit') renderAuditCaseOptions();
-    if(btn.dataset.tab==='settings'){ document.getElementById('settingsCount').textContent = cases.length; updateBackupUI(); }
+    if(btn.dataset.tab==='settings') document.getElementById('settingsCount').textContent = cases.length;
   });
 });
 
@@ -743,98 +449,6 @@ const EXTRACTION_PROMPT = `這是一份社區/協會向台電睦鄰計畫申請�
 6. 日期盡量統一為民國年格式，例如 115/2/26。
 
 欄位：month、docNumber、orgName、taxId、activityName、location、startDate、endDate、budgetAmount、ownFund、requestedAmount、approvedAmount、approvedDate、applyDate、responsible、contact、phone、mailAddress、orgAddress。`;
-
-const AUDIT_RESPONSE_SCHEMA = {
-  type:'OBJECT',
-  properties:{
-    verdict:{type:'STRING', enum:['大致完整','需要補件','疑似重大問題','無法判斷']},
-    summary:{type:'STRING'},
-    documentChecklist:{
-      type:'ARRAY',
-      items:{
-        type:'OBJECT',
-        properties:{
-          documentName:{type:'STRING'},
-          requirement:{type:'STRING', enum:['必要','條件式','參考']},
-          status:{type:'STRING', enum:['已提供','疑似缺少','不適用','無法判斷']},
-          foundIn:{type:'STRING'},
-          finding:{type:'STRING'},
-          suggestion:{type:'STRING'}
-        },
-        required:['documentName','requirement','status','foundIn','finding','suggestion']
-      }
-    },
-    crossChecks:{
-      type:'ARRAY',
-      items:{
-        type:'OBJECT',
-        properties:{
-          field:{type:'STRING'},
-          referenceValue:{type:'STRING'},
-          observedValues:{type:'STRING'},
-          status:{type:'STRING', enum:['通過','提醒','缺失','無法判斷']},
-          explanation:{type:'STRING'}
-        },
-        required:['field','referenceValue','observedValues','status','explanation']
-      }
-    },
-    photoReview:{
-      type:'OBJECT',
-      properties:{
-        photoCount:{type:'STRING'},
-        minimumRequired:{type:'STRING'},
-        eventScenePhotos:{type:'STRING'},
-        sponsorIdentification:{type:'STRING'},
-        energySavingBanner:{type:'STRING'},
-        dateAndStamp:{type:'STRING'},
-        participantCountExplanation:{type:'STRING'},
-        status:{type:'STRING', enum:['通過','提醒','缺失','無法判斷']},
-        explanation:{type:'STRING'}
-      },
-      required:['photoCount','minimumRequired','eventScenePhotos','sponsorIdentification','energySavingBanner','dateAndStamp','participantCountExplanation','status','explanation']
-    },
-    checks:{
-      type:'ARRAY',
-      items:{
-        type:'OBJECT',
-        properties:{
-          category:{type:'STRING'},
-          item:{type:'STRING'},
-          status:{type:'STRING', enum:['通過','提醒','缺失','無法判斷']},
-          finding:{type:'STRING'},
-          evidence:{type:'STRING'},
-          sourceFile:{type:'STRING'},
-          page:{type:'STRING'},
-          suggestion:{type:'STRING'}
-        },
-        required:['category','item','status','finding','evidence','sourceFile','page','suggestion']
-      }
-    },
-    amountChecks:{
-      type:'ARRAY',
-      items:{
-        type:'OBJECT',
-        properties:{
-          item:{type:'STRING'}, expected:{type:'STRING'}, found:{type:'STRING'},
-          status:{type:'STRING', enum:['通過','提醒','缺失','無法判斷']}, explanation:{type:'STRING'}
-        },
-        required:['item','expected','found','status','explanation']
-      }
-    },
-    stampTax:{
-      type:'OBJECT',
-      properties:{
-        receiptAmount:{type:'STRING'}, expectedStamp:{type:'STRING'}, observedStamp:{type:'STRING'},
-        status:{type:'STRING', enum:['通過','提醒','缺失','無法判斷']}, explanation:{type:'STRING'}
-      },
-      required:['receiptAmount','expectedStamp','observedStamp','status','explanation']
-    },
-    missingDocuments:{type:'ARRAY', items:{type:'STRING'}},
-    uncertainty:{type:'ARRAY', items:{type:'STRING'}},
-    correctionNotice:{type:'STRING'}
-  },
-  required:['verdict','summary','documentChecklist','crossChecks','photoReview','checks','amountChecks','stampTax','missingDocuments','uncertainty','correctionNotice']
-};
 
 const RESPONSE_SCHEMA = {
   type:'OBJECT',
@@ -1315,7 +929,7 @@ function fmtMoney(n){
   return isNaN(v) ? 0 : v;
 }
 
-function renderStats(list = cases.filter(isStarted)){
+function renderStats(list){
   const total = list.length;
   const done = list.filter(c=>c.settlement && c.settlement.status==='結案').length;
   const totalApproved = list.reduce((sum,c)=>sum+fmtMoney(c.approvedAmount),0);
@@ -1406,798 +1020,10 @@ document.getElementById('settleTableBody').addEventListener('change', e=>{
   if(field==='settleAmount'){ renderStats(); }
 });
 
-
-// ---------- AI 核銷文件檢查 ----------
-const auditCaseSearchInput = document.getElementById('auditCaseSearchInput');
-const auditCaseSerialInput = document.getElementById('auditCaseSerial');
-const auditCaseSuggestions = document.getElementById('auditCaseSuggestions');
-const btnClearAuditCase = document.getElementById('btnClearAuditCase');
-const btnChangeAuditCase = document.getElementById('btnChangeAuditCase');
-const auditDropZone = document.getElementById('auditDropZone');
-const auditFileInput = document.getElementById('auditFileInput');
-const btnRunAudit = document.getElementById('btnRunAudit');
-const btnClearAuditFiles = document.getElementById('btnClearAuditFiles');
-let auditFiles = [];
-let auditRunning = false;
-let currentAuditResult = null;
-let currentAuditCaseSerial = '';
-
-function localDateTimeText(){
-  const d = new Date();
-  const pad = n=>String(n).padStart(2,'0');
-  return `${d.getFullYear()}/${pad(d.getMonth()+1)}/${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
-}
-
-function normalizeAuditSearch(value){
-  return String(value || '').trim().toLocaleLowerCase('zh-Hant');
-}
-
-function getSelectedAuditCase(){
-  return cases.find(item=>item.serial===auditCaseSerialInput.value) || null;
-}
-
-function renderAuditCaseOptions(){
-  const selected = getSelectedAuditCase();
-  if(auditCaseSerialInput.value && !selected){
-    auditCaseSerialInput.value = '';
-    auditCaseSearchInput.value = '';
-  }
-  renderAuditCaseSuggestions();
-  updateAuditCaseHint();
-}
-
-function renderAuditCaseSuggestions(){
-  const q = normalizeAuditSearch(auditCaseSearchInput.value);
-  if(!q || auditCaseSerialInput.value){
-    auditCaseSuggestions.innerHTML = '';
-    return;
-  }
-
-  const matches = [...cases]
-    .filter(c=>[
-      c.serial, c.orgName, c.taxId, c.activityName, c.location,
-      c.responsible, c.contact
-    ].some(value=>normalizeAuditSearch(value).includes(q)))
-    .sort((a,b)=>String(a.serial||'').localeCompare(String(b.serial||''), 'zh-Hant', {numeric:true}))
-    .slice(0,10);
-
-  if(!matches.length){
-    auditCaseSuggestions.innerHTML = '<div class="hint" style="margin-top:7px;">找不到符合的已建檔案件。可改用序號、單位名稱、統編或活動名稱搜尋。</div>';
-    return;
-  }
-
-  auditCaseSuggestions.innerHTML = matches.map(c=>`
-    <div class="suggest-item audit-case-option" data-serial="${escAttr(c.serial)}">
-      <div class="s-main">
-        <div class="s-serial">${escHtml(c.serial)}</div>
-        <div class="s-org">${escHtml(c.orgName||'未填單位')}</div>
-        <div class="s-meta">${escHtml(c.activityName||'未填活動')} · 統編 ${escHtml(c.taxId||'—')} · 核定 ${c.approvedAmount?Number(c.approvedAmount).toLocaleString():'—'} 元</div>
-      </div>
-      <button class="s-add" type="button">選擇</button>
-    </div>`).join('');
-
-  auditCaseSuggestions.querySelectorAll('.audit-case-option').forEach(el=>{
-    el.addEventListener('click', ()=>selectAuditCase(el.dataset.serial));
-  });
-}
-
-function selectAuditCase(serial){
-  const c = cases.find(item=>item.serial===serial);
-  if(!c) return;
-  auditCaseSerialInput.value = c.serial;
-  auditCaseSearchInput.value = '';
-  auditCaseSuggestions.innerHTML = '';
-  updateAuditCaseHint();
-}
-
-function clearAuditCaseSelection(focusSearch=false){
-  auditCaseSerialInput.value = '';
-  auditCaseSearchInput.value = '';
-  auditCaseSuggestions.innerHTML = '';
-  updateAuditCaseHint();
-  if(focusSearch) auditCaseSearchInput.focus();
-}
-
-function updateAuditCaseHint(){
-  const c = getSelectedAuditCase();
-  const hint = document.getElementById('auditCaseHint');
-  const selectedBox = document.getElementById('auditSelectedCase');
-  const selectedTitle = document.getElementById('auditSelectedCaseTitle');
-  const selectedMeta = document.getElementById('auditSelectedCaseMeta');
-
-  if(!c){
-    selectedBox.style.display = 'none';
-    btnClearAuditCase.disabled = true;
-    hint.textContent = '尚未選擇案件。未綁定案件時，AI 仍可檢查文件，但無法對照核定金額與已建檔資料。';
-    return;
-  }
-
-  const latest = Array.isArray(c.auditChecks) && c.auditChecks.length ? c.auditChecks[0] : null;
-  const approved = c.approvedAmount ? Number(c.approvedAmount).toLocaleString()+' 元' : '未登記';
-  selectedTitle.textContent = `${c.serial}｜${c.orgName||'未填單位'}`;
-  selectedMeta.textContent = `${c.activityName||'未填活動'}｜核定金額：${approved}`;
-  selectedBox.style.display = 'flex';
-  btnClearAuditCase.disabled = false;
-  hint.textContent = latest ? `最近檢查：${latest.checkedAtText||latest.checkedAt||'有紀錄'}` : '此案件尚無 AI 檢查紀錄。';
-}
-
-auditCaseSearchInput.addEventListener('input', ()=>{
-  if(auditCaseSerialInput.value) auditCaseSerialInput.value = '';
-  updateAuditCaseHint();
-  renderAuditCaseSuggestions();
-});
-auditCaseSearchInput.addEventListener('focus', renderAuditCaseSuggestions);
-auditCaseSearchInput.addEventListener('keydown', e=>{
-  if(e.key==='Escape'){
-    auditCaseSuggestions.innerHTML = '';
-    auditCaseSearchInput.blur();
-  }
-});
-btnClearAuditCase.addEventListener('click', ()=>clearAuditCaseSelection(true));
-btnChangeAuditCase.addEventListener('click', ()=>clearAuditCaseSelection(true));
-document.addEventListener('click', e=>{
-  if(!e.target.closest('#auditCaseSuggestions') && e.target!==auditCaseSearchInput){
-    auditCaseSuggestions.innerHTML = '';
-  }
-});
-
-auditDropZone.addEventListener('click', ()=>{ if(!auditRunning) auditFileInput.click(); });
-auditDropZone.addEventListener('dragover', e=>{ e.preventDefault(); if(!auditRunning) auditDropZone.classList.add('drag'); });
-auditDropZone.addEventListener('dragleave', ()=>auditDropZone.classList.remove('drag'));
-auditDropZone.addEventListener('drop', e=>{
-  e.preventDefault(); auditDropZone.classList.remove('drag'); selectAuditFiles(e.dataTransfer.files);
-});
-auditFileInput.addEventListener('change', e=>{ selectAuditFiles(e.target.files); auditFileInput.value=''; });
-
-function selectAuditFiles(fileList){
-  if(auditRunning) return;
-  const files = Array.from(fileList||[]);
-  const allowed = ['application/pdf','image/jpeg','image/png'];
-  const invalid = files.find(file=>!allowed.includes(file.type) && !/\.(pdf|jpe?g|png)$/i.test(file.name));
-  if(invalid){ setStatus('auditStatus',`「${escapeHtml(invalid.name)}」不是支援的 PDF、JPG 或 PNG。`,'err'); return; }
-  if(files.length>10){ setStatus('auditStatus','一次最多只能選擇 10 件核銷文件。','err'); return; }
-  const total = files.reduce((sum,file)=>sum+file.size,0);
-  if(total>45*1024*1024){ setStatus('auditStatus','文件合計超過 45 MB，請分批檢查或先壓縮檔案。','err'); return; }
-  auditFiles = files;
-  setStatus('auditStatus','',null);
-  renderAuditFileList();
-  updateAuditControls();
-}
-
-function renderAuditFileList(){
-  const box = document.getElementById('auditFileList');
-  box.innerHTML = auditFiles.map((file,index)=>`<div class="audit-file-row">
-    <div class="audit-file-name">${escapeHtml(file.name)}</div>
-    <div class="audit-file-meta">${formatFileSize(file.size)} <button type="button" class="remove-btn audit-remove-file" data-index="${index}" title="移除">✕</button></div>
-  </div>`).join('');
-  box.querySelectorAll('.audit-remove-file').forEach(btn=>{
-    btn.addEventListener('click', ()=>{
-      auditFiles.splice(Number(btn.dataset.index),1);
-      renderAuditFileList(); updateAuditControls();
-    });
-  });
-}
-
-function updateAuditControls(){
-  btnRunAudit.disabled = auditRunning || !auditFiles.length;
-  btnClearAuditFiles.disabled = auditRunning || !auditFiles.length;
-  auditDropZone.classList.toggle('disabled', auditRunning);
-}
-
-btnClearAuditFiles.addEventListener('click', ()=>{
-  if(auditRunning) return;
-  auditFiles=[]; currentAuditResult=null; currentAuditCaseSerial='';
-  renderAuditFileList(); updateAuditControls();
-  document.getElementById('auditResultCard').style.display='none';
-  setStatus('auditStatus','',null); setStatus('auditSaveStatus','',null);
-});
-
-function fileToBase64Data(file){
-  return new Promise((resolve,reject)=>{
-    const reader = new FileReader();
-    reader.onload=()=>{
-      const result=String(reader.result||'');
-      const comma=result.indexOf(',');
-      if(comma<0) reject(new Error(`無法讀取「${file.name}」。`));
-      else resolve(result.slice(comma+1));
-    };
-    reader.onerror=()=>reject(new Error(`讀取「${file.name}」失敗。`));
-    reader.readAsDataURL(file);
-  });
-}
-
-function mimeForAuditFile(file){
-  if(file.type) return file.type;
-  if(/\.pdf$/i.test(file.name)) return 'application/pdf';
-  if(/\.png$/i.test(file.name)) return 'image/png';
-  return 'image/jpeg';
-}
-
-function buildAuditPrompt(c){
-  const approved = fmtMoney(c&&c.approvedAmount);
-  const expectedStamp = approved ? Math.floor(approved*0.004) : '';
-  const completePackage = document.getElementById('auditCompletePackage').checked;
-  const orgTypeValue = document.getElementById('auditOrgType').value;
-  const orgTypeText = ({unknown:'不確定，請由文件內容判斷',people:'一般人民團體',corporate:'社團法人團體',government:'政府機關或學校'})[orgTypeValue] || '不確定';
-  const caseText = c ? `
-【系統既有案件資料／核准資料對照基準】
-序號：${c.serial||''}
-申請單位：${c.orgName||''}
-統一編號：${c.taxId||''}
-活動名稱：${c.activityName||''}
-活動地點：${c.location||''}
-活動日期：${c.startDate||''} 至 ${c.endDate||''}
-核定補助金額：${c.approvedAmount||''}
-負責人：${c.responsible||''}
-通訊地址：${c.mailAddress||''}
-會址：${c.orgAddress||''}
-依核定金額試算銀錢收據印花：${expectedStamp!==''?expectedStamp+'元':'無法試算'}
-` : `
-【系統既有案件資料】未選擇案件，請只依附件互相比對；無法對照核准資料的項目標示「無法判斷」。
-`;
-  return `你是台灣電力公司南投區營業處睦鄰補助案件的核銷文件檢查助手。請逐頁閱讀所有附件，依「台電南投區處睦鄰補助案件檢核表」做完整初步審核，並只回傳符合 JSON Schema 的資料。
-
-【本次檢查設定】
-上傳範圍：${completePackage?'協會送來的完整核銷文件包；必要文件未出現時可列為「疑似缺少」':'僅上傳部分文件；未出現的文件不得直接判定缺失，應列「無法判斷」'}
-團體類型：${orgTypeText}
-${caseText}
-【判斷原則】
-1. 只能根據附件實際可見內容判斷，不可臆測。看不清楚、影像模糊、印章姓名無法辨認、未提供核准資料或規定需人工確認時，status 必須填「無法判斷」。
-2. 「通過」只可用於內容清楚可見且與對照資料一致；欄位空白、資料矛盾、必要章戳明顯缺少或金額計算錯誤才列「缺失」；條件式風險列「提醒」。
-3. 每個缺失、提醒與無法判斷都要寫來源檔名、頁碼或可辨識位置，以及實際看見的文字、數字或影像狀況。
-4. 不得只因文件名稱正確就判定通過，必須檢查實際填寫內容、章戳、日期、附件與計算。
-5. 國字大寫金額須換算後與阿拉伯數字及核定金額比對；日期需辨識民國年與西元年並統一理解。
-6. 同一事項在不同文件不一致時，列「缺失」或「提醒」，並清楚列出各文件的值。
-7. 若文件屬空白範本或大部分必要欄位未填，不可視為已完成文件。
-8. checks 陣列必須逐項涵蓋下列所有標準，不得任意省略或合併；即使無法判斷也要回傳一筆。
-
-【文件完整性清單 documentChecklist】
-請逐一判斷：
-1. 受捐助單位入戶申請書（必要）
-2. 存摺影本（必要）
-3. 領款收據（必要）
-4. 切結書（必要）
-5. 實際支用經費明細表（必要）
-6. 支出憑證黏存單及支用單據正本（必要）
-7. 成果報告（必要）
-8. 成果照片（必要）
-9. 會址變更公文函、扣繳憑單或扣繳單位設立登記申請書等會址證明（地址不同或立案證書無詳細地址時才必要）
-10. 法人登記證書（社團法人團體才必要）
-若本次設定為部分文件，未看到的文件 status 填「無法判斷」而非「疑似缺少」。
-
-【跨文件一致性 crossChecks】
-至少比對：申請／請款單位全名、統一編號、活動名稱、活動日期、活動地點、核定／請款金額、負責人姓名、會址、銀行戶名、銀行名稱／代碼／帳號、各文件日期、成果照片日期。每個欄位要列出核准或系統參考值，以及附件中看到的值。
-
-【逐項標準 checks】
-一、受捐助單位入戶申請書
-1. 申請單位、活動名稱及補助金額國字大寫與核准資料一致。
-2. 銀行名稱、分行、代碼、帳號、戶名均已填妥，且與存摺影本一致。
-3. 受捐助單位名稱、負責人姓名已填，並有單位圖記與負責人章。
-4. 申請日期及聯絡電話等必要欄位是否完整。
-
-二、存摺影本
-5. 可清楚辨識銀行、分行、帳號與戶名，且與入戶申請書及領款收據一致。
-6. 存摺影本黏貼處或騎縫處有單位圖記與負責人章。
-
-三、領款收據
-7. 活動名稱與補助金額國字大寫和核准資料一致。
-8. 具領單位、銀行帳戶戶名、統一編號、單位地址、負責人、主辦會計、承辦人、支票寄達地點等欄位完整。
-9. 有負責人、主辦會計、承辦人印章及單位圖記；若國內團體確實未編制主辦會計，可免核章，但不清楚時列提醒或人工確認，不可直接判缺失。
-10. 收據出據日期完整；若超過活動結束後一個月，是否有加註合理說明。
-11. 會址與立案／系統資料不同時，是否附會址變更公文函、扣繳憑單或扣繳單位設立登記申請書等證明。
-12. 印花稅票原則按補助／收取金額千分之四計算，元以下尾數免計；辨識實貼印花或彙總繳納證明。檢核表要求印花不要直接黏貼於文件上；若看不清貼附方式或屬票據支付、彙總繳納，列提醒或無法判斷。
-
-四、切結書
-13. 活動日期與活動名稱和核准資料一致。
-14. 單位名稱、負責人、地址及日期等資料完整。
-15. 有單位圖記與負責人章。
-
-五、實際支用經費明細表
-16. 請款單位、活動名稱、請款總金額國字大寫與核准資料一致。
-17. 經費來源已完整列出所有補助機關、民間補助及自有款，無漏列或互相矛盾。
-18. 每一支用項目均有項目、數量、單位、單價、金額，數量×單價=金額，各列及合計計算正確。
-19. 支用項目、品名、數量、單位、單價與所附發票／收據一致；有差額時已敘明原因。
-20. 經費來源合計、全部支用合計、請款總金額及支用單據合計之間關係合理且一致。
-21. 聲明事項與申請情形相符，尤其是否清楚說明向台電南投區營業處申請及其他補助來源。
-22. 有承辦人、複核、主辦會計、負責人章及單位圖記；若特定欄位依法免核章，需有合理依據。
-
-六、支出憑證黏存單及支用單據
-23. 已檢附與台電補助金額同額或以上的統一發票／收據正本；若為影本，是否註明「與正本相符」並蓋單位戳記或承辦人印章。
-24. 單據黏貼線或騎縫處有單位圖記或承辦人印章。
-25. 黏存單上的單據號碼、項目、金額及用途說明完整，且與所黏單據相符。
-26. 支用單據品名、數量、單價、金額與實際支用經費明細表一致。
-27. 支用單據日期清楚且不晚於活動日期；若規定或特殊情況不同，列提醒並說明需人工確認。
-28. 支用單據買受人為受補助單位完整全名，文字無塗改；若免開買受人或電子發票格式特殊，列提醒。
-29. 支用單據金額欄正確且無塗改，統一發票／收據必要章戳與商家資料可辨識。
-30. 是否有重複、相似、疑似同一交易拆單或多張相同商家／金額／日期單據；如有，是否附合理說明。
-
-七、成果報告
-31. 請款單位、活動名稱、活動日期、活動地點與核准資料一致。
-32. 參加對象、參加人數、活動成果說明及活動照片張數已填妥。
-33. 有單位圖記與負責人章。
-34. 若照片無法完整呈現參加人數，成果報告有說明，例如攝影角度、場地布局或人員流動等原因。
-
-八、成果照片 photoReview
-35. 現場及活動進行中的彩色照片至少四張，並檢查是否疑似重複、非本次活動或內容無法辨識。
-36. 至少一張照片可清楚辨識現場布條、背板或其他布置，內容包含主辦單位、活動名稱及「贊助單位：台灣電力公司」。
-37. 至少一張照片可清楚辨識宣導節能標語布條，且包含「台灣電力公司 廣告」。
-38. 每張照片日期與活動日期相符；若照片本身無日期，必須逐張標註日期，且每張日期旁有承辦人印章。
-39. 照片內容、現場人數與成果報告所填人數大致合理；無法完整呈現時是否已有說明。
-photoReview 要分別填寫照片張數、現場照片、贊助辨識、節能標語、日期與章、人數說明，不得只給總結。
-
-九、其他條件式文件
-40. 人民團體立案證書若無會址詳細地址，或各文件會址不同，是否附會址證明文件並蓋單位大小章。
-41. 社團法人團體是否附法人登記證書；非社團法人則標「不適用」。
-
-【金額與印花 amountChecks／stampTax】
-至少列出：核定金額與入戶申請書、領款收據、明細表請款總額的比對；支用明細加總；支用單據合計；經費來源合計；自有款與其他補助；印花應貼金額與可見實貼金額。無法辨識時不可填 0，應填「無法判斷」。
-
-【缺漏與補件文字】
-missingDocuments 只列確有依據的疑似缺少文件，並標註「必要」或「條件式」。uncertainty 列出影像不清、章戳需人工辨認、單據真偽、正本與否等 AI 無法可靠判斷事項。
-correctionNotice 只列「缺失」、「提醒」及必要的人工確認事項，文字要可直接貼給協會，語氣禮貌、具體、分點列出，不要提到 AI 或模型。若沒有明顯缺失，請寫「經初步檢查未發現明顯缺失，仍請依正式審核結果辦理。」
-
-【輸出長度要求】
-- checks 仍須完整回傳 41 項，但每一項文字應簡潔，避免重複規則原文。
-- finding、evidence、explanation、suggestion 各以 80 個中文字內為原則。
-- correctionNotice 以 1200 個中文字內為原則。
-- 只輸出 JSON，不要輸出推理過程、Markdown 或額外說明。`;
-}
-
-function parseGeminiJson(rawText){
-  const cleaned = String(rawText||'').trim().replace(/^```(?:json)?\s*/i,'').replace(/```\s*$/,'').trim();
-  try{ return JSON.parse(cleaned); }catch(e){
-    const first=cleaned.indexOf('{'), last=cleaned.lastIndexOf('}');
-    if(first>=0 && last>first) return JSON.parse(cleaned.slice(first,last+1));
-    throw e;
-  }
-}
-
-btnRunAudit.addEventListener('click', async ()=>{
-  const apiKey=getApiKey();
-  if(!apiKey){ setStatus('auditStatus','請先到「設定」頁輸入 Gemini API 金鑰。','err'); return; }
-  if(!auditFiles.length || auditRunning) return;
-
-  auditRunning=true; currentAuditResult=null; currentAuditCaseSerial=auditCaseSerialInput.value;
-  btnRunAudit.textContent='AI 檢查中…'; updateAuditControls();
-  document.getElementById('auditResultCard').style.display='none';
-  setStatus('auditSaveStatus','',null);
-
-  try{
-    const selectedCase=cases.find(c=>c.serial===currentAuditCaseSerial) || null;
-    const parts=[{text:buildAuditPrompt(selectedCase)}];
-    for(let i=0;i<auditFiles.length;i++){
-      const file=auditFiles[i];
-      setStatus('auditStatus',`正在讀取第 ${i+1}／${auditFiles.length} 件：${escapeHtml(file.name)}`,'info');
-      const data=await fileToBase64Data(file);
-      parts.push({text:`附件 ${i+1}，檔名：${file.name}`});
-      parts.push({inline_data:{mime_type:mimeForAuditFile(file),data}});
-    }
-
-    const requestBody={
-      contents:[{role:'user',parts}],
-      generationConfig:{
-        maxOutputTokens:32000,
-        thinkingConfig:{thinkingLevel:'LOW'},
-        responseMimeType:'application/json',
-        responseSchema:AUDIT_RESPONSE_SCHEMA
-      }
-    };
-
-    let responseData=null;
-    for(let attempt=1;attempt<=3;attempt++){
-      setStatus('auditStatus',attempt===1?'Gemini 正在逐頁檢查核銷文件…':`API 暫時忙碌，正在第 ${attempt} 次重試…`,'info');
-      let resp,data;
-      try{
-        resp=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent?key=${encodeURIComponent(apiKey)}`,{
-          method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(requestBody)
-        });
-        data=await resp.json();
-      }catch(networkErr){
-        if(attempt<3){ await sleep(attempt*3000); continue; }
-        throw new Error('網路連線失敗，請稍後再試。');
-      }
-      if(!resp.ok || data.error){
-        const status=resp.status;
-        const message=data?.error?.message || `API 錯誤（${status}）`;
-        if([429,500,502,503,504].includes(status) && attempt<3){ await sleep(attempt*4000); continue; }
-        throw new Error(message);
-      }
-      responseData=data; break;
-    }
-    let candidate=responseData?.candidates?.[0];
-    if(!candidate) throw new Error('沒有收到檢查結果，請確認 API 金鑰或稍後再試。');
-
-    // 完整檢核包含 41 項規則，Gemini 偶爾會因思考與 JSON 輸出過長而達到 token 上限。
-    // 遇到 MAX_TOKENS 時，自動改用極低思考量與較高輸出上限再執行一次，不必由使用者重新上傳。
-    if(candidate.finishReason==='MAX_TOKENS'){
-      setStatus('auditStatus','檢核項目較多，正在自動精簡結果並重試…','info');
-      const retryBody={
-        ...requestBody,
-        contents:[{
-          ...requestBody.contents[0],
-          parts:[
-            {
-              text:requestBody.contents[0].parts[0].text + `
-
-【輸出精簡要求】上一輪因輸出過長而中止。仍須完整回傳所有 41 項 checks，但每個 finding、evidence、explanation、suggestion 請各控制在 80 個中文字內；相同內容不要重複；correctionNotice 控制在 1200 個中文字內。只輸出 JSON。`
-            },
-            ...requestBody.contents[0].parts.slice(1)
-          ]
-        }],
-        generationConfig:{
-          ...requestBody.generationConfig,
-          maxOutputTokens:60000,
-          thinkingConfig:{thinkingLevel:'MINIMAL'}
-        }
-      };
-      const retryResp=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent?key=${encodeURIComponent(apiKey)}`,{
-        method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(retryBody)
-      });
-      const retryData=await retryResp.json();
-      if(!retryResp.ok || retryData.error){
-        throw new Error(retryData?.error?.message || `API 錯誤（${retryResp.status}）`);
-      }
-      responseData=retryData;
-      candidate=responseData?.candidates?.[0];
-      if(!candidate) throw new Error('重新檢查後仍未收到結果，請稍後再試。');
-    }
-
-    if(candidate.finishReason && candidate.finishReason!=='STOP'){
-      if(candidate.finishReason==='MAX_TOKENS'){
-        throw new Error('檢查結果仍超過輸出上限。請將文件分成兩批檢查，或只上傳一份整合後的 PDF 再試。');
-      }
-      throw new Error(`AI 回覆未完整結束（${candidate.finishReason}）。`);
-    }
-    const raw=(candidate.content?.parts||[]).map(part=>part.text||'').join('').trim();
-    if(!raw) throw new Error('AI 沒有回傳可解析的檢查內容。');
-    currentAuditResult=parseGeminiJson(raw);
-    renderAuditResult(currentAuditResult);
-    setStatus('auditStatus','AI 初步檢查完成，請逐項核對原始文件。','ok');
-  }catch(err){
-    console.error(err);
-    setStatus('auditStatus',`檢查失敗：${escapeHtml(err.message||'未知錯誤')}`,'err');
-  }finally{
-    auditRunning=false; btnRunAudit.textContent='✨ 開始 AI 檢查'; updateAuditControls();
-  }
-});
-
-function auditStatusClass(status){
-  if(status==='通過') return 'pass';
-  if(status==='提醒') return 'warn';
-  if(status==='缺失') return 'fail';
-  return 'unknown';
-}
-
-function renderAuditResult(data){
-  const checks=Array.isArray(data.checks)?data.checks:[];
-  const count=status=>checks.filter(item=>item.status===status).length;
-  document.getElementById('auditVerdict').textContent=data.verdict||'檢查完成';
-  document.getElementById('auditSummary').textContent=data.summary||'';
-  document.getElementById('auditPassCount').textContent=count('通過');
-  document.getElementById('auditWarnCount').textContent=count('提醒');
-  document.getElementById('auditFailCount').textContent=count('缺失');
-  document.getElementById('auditUnknownCount').textContent=count('無法判斷');
-
-  const docItems=Array.isArray(data.documentChecklist)?data.documentChecklist:[];
-  const docStatusClass=status=>{
-    if(status==='已提供' || status==='不適用') return 'pass';
-    if(status==='疑似缺少') return 'fail';
-    return 'unknown';
-  };
-  document.getElementById('auditDocumentChecklist').innerHTML=docItems.length?`<div style="overflow-x:auto;"><table>
-    <thead><tr><th>文件</th><th>需求</th><th>結果</th><th>辨識位置</th><th>判斷</th><th>建議</th></tr></thead>
-    <tbody>${docItems.map(item=>`<tr>
-      <td>${escHtml(item.documentName||'')}</td>
-      <td>${escHtml(item.requirement||'')}</td>
-      <td><span class="audit-status ${docStatusClass(item.status)}">${escHtml(item.status||'無法判斷')}</span></td>
-      <td>${escHtml(item.foundIn||'—')}</td>
-      <td>${escHtml(item.finding||'')}</td>
-      <td>${escHtml(item.suggestion||'')}</td>
-    </tr>`).join('')}</tbody>
-  </table></div>`:'<div class="audit-empty">AI 未回傳文件完整性清單。</div>';
-
-  const crossItems=Array.isArray(data.crossChecks)?data.crossChecks:[];
-  document.getElementById('auditCrossChecks').innerHTML=crossItems.length?`<div style="overflow-x:auto;"><table>
-    <thead><tr><th>比對欄位</th><th>核准／參考值</th><th>附件辨識值</th><th>結果</th><th>說明</th></tr></thead>
-    <tbody>${crossItems.map(item=>`<tr>
-      <td>${escHtml(item.field||'')}</td>
-      <td>${escHtml(item.referenceValue||'—')}</td>
-      <td>${escHtml(item.observedValues||'—')}</td>
-      <td><span class="audit-status ${auditStatusClass(item.status)}">${escHtml(item.status||'無法判斷')}</span></td>
-      <td>${escHtml(item.explanation||'')}</td>
-    </tr>`).join('')}</tbody>
-  </table></div>`:'<div class="audit-empty">沒有可顯示的跨文件比對結果。</div>';
-
-  const photo=data.photoReview||{};
-  const photoRows=[
-    ['照片張數',photo.photoCount,`至少 ${photo.minimumRequired||'4 張'}`],
-    ['現場及進行中照片',photo.eventScenePhotos,'應包含現場及活動進行中照片'],
-    ['主辦／活動／贊助單位辨識',photo.sponsorIdentification,'至少一張可辨識主辦單位、活動名稱、贊助單位：台灣電力公司'],
-    ['節能宣導布條',photo.energySavingBanner,'至少一張可辨識節能標語及「台灣電力公司 廣告」'],
-    ['日期與承辦人章',photo.dateAndStamp,'每張日期須與活動日相符；無日期時逐張標註並蓋承辦人章'],
-    ['參加人數說明',photo.participantCountExplanation,'照片無法完整呈現人數時應附說明']
-  ];
-  document.getElementById('auditPhotoReview').innerHTML=Object.keys(photo).length?`<div style="overflow-x:auto;"><table>
-    <thead><tr><th>項目</th><th>辨識結果</th><th>檢核標準</th></tr></thead>
-    <tbody>${photoRows.map(row=>`<tr><td>${escHtml(row[0])}</td><td>${escHtml(row[1]||'無法判斷')}</td><td>${escHtml(row[2])}</td></tr>`).join('')}</tbody>
-  </table></div><div class="status-msg ${photo.status==='缺失'?'err':(photo.status==='通過'?'ok':'info')}" style="margin-top:8px;"><b>${escHtml(photo.status||'無法判斷')}</b>：${escHtml(photo.explanation||'')}</div>`:'<div class="audit-empty">沒有可顯示的成果照片檢查結果。</div>';
-
-  const tbody=document.getElementById('auditChecksBody');
-  tbody.innerHTML=checks.length?checks.map(item=>`<tr>
-    <td><span class="audit-status ${auditStatusClass(item.status)}">${escHtml(item.status||'無法判斷')}</span></td>
-    <td>${escHtml(item.category||'')}</td>
-    <td>${escHtml(item.item||'')}</td>
-    <td>${escHtml(item.finding||'')}<div class="audit-evidence">${escHtml([item.sourceFile,item.page,item.evidence].filter(Boolean).join('｜')||'未提供依據')}</div></td>
-    <td>${escHtml(item.suggestion||'')}</td>
-  </tr>`).join(''):'<tr><td colspan="5" class="hint" style="padding:14px;">AI 未回傳逐項檢查資料。</td></tr>';
-
-  const amountItems=Array.isArray(data.amountChecks)?data.amountChecks:[];
-  const stamp=data.stampTax||{};
-  const amountRows=[...amountItems];
-  if(Object.keys(stamp).length){
-    amountRows.push({item:'領款收據印花',expected:stamp.expectedStamp,found:stamp.observedStamp,status:stamp.status,explanation:stamp.explanation});
-  }
-  document.getElementById('auditAmountChecks').innerHTML=amountRows.length?`<div style="overflow-x:auto;"><table>
-    <thead><tr><th>項目</th><th>應有／對照值</th><th>文件辨識值</th><th>結果</th><th>說明</th></tr></thead>
-    <tbody>${amountRows.map(item=>`<tr><td>${escHtml(item.item||'')}</td><td>${escHtml(item.expected||'—')}</td><td>${escHtml(item.found||'—')}</td><td><span class="audit-status ${auditStatusClass(item.status)}">${escHtml(item.status||'無法判斷')}</span></td><td>${escHtml(item.explanation||'')}</td></tr>`).join('')}</tbody>
-  </table></div>`:'<div class="audit-empty">沒有可比對的金額資料。</div>';
-
-  const missing=Array.isArray(data.missingDocuments)?data.missingDocuments:[];
-  document.getElementById('auditMissingDocs').innerHTML=missing.length?`<ul class="audit-list">${missing.map(x=>`<li>${escHtml(x)}</li>`).join('')}</ul>`:'<div class="audit-empty">未發現明確缺漏文件；仍請依案件類型人工確認。</div>';
-  const uncertainty=Array.isArray(data.uncertainty)?data.uncertainty:[];
-  document.getElementById('auditUncertainty').innerHTML=uncertainty.length?`<ul class="audit-list">${uncertainty.map(x=>`<li>${escHtml(x)}</li>`).join('')}</ul>`:'<div class="audit-empty">沒有另外列出的待確認事項。</div>';
-  document.getElementById('auditCorrectionNotice').value=data.correctionNotice||'';
-  document.getElementById('auditResultCard').style.display='block';
-  document.getElementById('auditResultCard').scrollIntoView({behavior:'smooth',block:'start'});
-}
-
-async function copyTextToClipboard(text){
-  if(navigator.clipboard && window.isSecureContext){ await navigator.clipboard.writeText(text); return; }
-  const ta=document.createElement('textarea'); ta.value=text; document.body.appendChild(ta); ta.select(); document.execCommand('copy'); ta.remove();
-}
-
-document.getElementById('btnCopyAuditNotice').addEventListener('click', async ()=>{
-  const text=document.getElementById('auditCorrectionNotice').value.trim();
-  if(!text){ setStatus('auditSaveStatus','目前沒有可複製的補件文字。','err'); return; }
-  try{ await copyTextToClipboard(text); setStatus('auditSaveStatus','補件文字已複製。','ok'); }
-  catch(e){ setStatus('auditSaveStatus','無法自動複製，請手動選取文字。','err'); }
-});
-
-function getCurrentAuditCase(){ return cases.find(c=>c.serial===currentAuditCaseSerial); }
-
-document.getElementById('btnSaveAuditRecord').addEventListener('click', ()=>{
-  if(!currentAuditResult){ setStatus('auditSaveStatus','請先完成 AI 檢查。','err'); return; }
-  const c=getCurrentAuditCase();
-  if(!c){ setStatus('auditSaveStatus','這次檢查未綁定案件，無法儲存紀錄。','err'); return; }
-  c.auditChecks=Array.isArray(c.auditChecks)?c.auditChecks:[];
-  const record={
-    checkedAt:new Date().toISOString(), checkedAtText:localDateTimeText(),
-    files:auditFiles.map(file=>({name:file.name,size:file.size,type:mimeForAuditFile(file)})),
-    result:currentAuditResult
-  };
-  const duplicate=c.auditChecks[0] && c.auditChecks[0].checkedAtText===record.checkedAtText;
-  if(!duplicate) c.auditChecks.unshift(record);
-  saveCases(cases); updateAuditCaseHint();
-  setStatus('auditSaveStatus','已將檢查結果儲存在這筆案件中。','ok');
-});
-
-document.getElementById('btnWriteAuditNotes').addEventListener('click', ()=>{
-  if(!currentAuditResult){ setStatus('auditSaveStatus','請先完成 AI 檢查。','err'); return; }
-  const c=getCurrentAuditCase();
-  if(!c){ setStatus('auditSaveStatus','請先選擇對應案件，才能寫入核銷備註。','err'); return; }
-  c.settlement=c.settlement||{};
-  const notice=document.getElementById('auditCorrectionNotice').value.trim();
-  const note=`[AI核銷初檢 ${localDateTimeText()}]\n${currentAuditResult.summary||''}${notice?'\n'+notice:''}`.trim();
-  c.settlement.notes=[c.settlement.notes||'',note].filter(Boolean).join('\n\n');
-  if(!c.settlement.status && (currentAuditResult.verdict==='需要補件' || currentAuditResult.verdict==='疑似重大問題')) c.settlement.status='補件中';
-  saveCases(cases); renderSettleTable();
-  setStatus('auditSaveStatus','已寫入核銷備註；若判定需要補件，狀態也會自動設為「補件中」。','ok');
-});
-
 // ---------- 總覽 Tab ----------
 // ---------- 已建檔案件 Tab ----------
 const recordsSearchInput = document.getElementById('recordsSearchInput');
-const recordsExcelInput = document.getElementById('recordsExcelInput');
 recordsSearchInput.addEventListener('input', renderRecordsTable);
-
-document.getElementById('btnImportRecordsExcel').addEventListener('click', ()=>{
-  recordsExcelInput.click();
-});
-
-const RECORD_IMPORT_COLUMNS = [
-  {field:'serial', title:'序號', aliases:['序號','案件序號']},
-  {field:'orgName', title:'申請單位', aliases:['申請單位','單位名稱','協會名稱']},
-  {field:'taxId', title:'統一編號', aliases:['統一編號','統編']},
-  {field:'activityName', title:'活動名稱', aliases:['活動名稱']},
-  {field:'location', title:'活動地點', aliases:['活動地點','地點']},
-  {field:'startDate', title:'活動時間(起)', aliases:['活動時間(起)','活動時間（起）','活動日期(起)','活動日期（起）','開始日期']},
-  {field:'endDate', title:'活動時間(迄)', aliases:['活動時間(迄)','活動時間（迄）','活動日期(迄)','活動日期（迄）','結束日期']},
-  {field:'budgetAmount', title:'活動預算金額', aliases:['活動預算金額','活動預算','預算金額']},
-  {field:'ownFund', title:'自有款', aliases:['自有款','自籌款']},
-  {field:'approvedAmount', title:'核定補助金額', aliases:['核定補助金額','核定金額','核准補助金額']},
-  {field:'approvedDate', title:'核准日期', aliases:['核准日期','核定日期']},
-  {field:'responsible', title:'負責人', aliases:['負責人','理事長']},
-  {field:'contact', title:'連絡人', aliases:['連絡人','聯絡人']},
-  {field:'phone', title:'連絡電話', aliases:['連絡電話','聯絡電話','電話']},
-  {field:'mailAddress', title:'通訊地址', aliases:['通訊地址','通信地址']},
-  {field:'orgAddress', title:'會址', aliases:['會址','組織會址']}
-];
-
-function normalizeExcelHeader(value){
-  return String(value ?? '')
-    .trim()
-    .replace(/\s+/g,'')
-    .replace(/[（]/g,'(')
-    .replace(/[）]/g,')')
-    .replace(/：/g,':')
-    .toLowerCase();
-}
-
-function excelCellText(value){
-  return String(value ?? '').trim();
-}
-
-function normalizeImportedAmount(value){
-  const text = excelCellText(value);
-  if(!text) return '';
-  const cleaned = text.replace(/[，,\s元$＄]/g,'');
-  if(/^[-+]?\d+(?:\.\d+)?$/.test(cleaned)){
-    const num = Number(cleaned);
-    return Number.isFinite(num) ? String(num) : text;
-  }
-  return text;
-}
-
-function findExcelHeader(rows){
-  const aliasToField = new Map();
-  RECORD_IMPORT_COLUMNS.forEach(column=>{
-    column.aliases.forEach(alias=>aliasToField.set(normalizeExcelHeader(alias), column.field));
-  });
-  let best = null;
-  rows.slice(0,30).forEach((row,rowIndex)=>{
-    const fieldIndexes = {};
-    (row || []).forEach((cell,colIndex)=>{
-      const field = aliasToField.get(normalizeExcelHeader(cell));
-      if(field && fieldIndexes[field] === undefined) fieldIndexes[field] = colIndex;
-    });
-    const score = Object.keys(fieldIndexes).length;
-    if(!best || score > best.score) best = {rowIndex, fieldIndexes, score};
-  });
-  return best;
-}
-
-function importedRecordFromRow(row, fieldIndexes){
-  const valueOf = field=>{
-    const idx = fieldIndexes[field];
-    return idx === undefined ? '' : excelCellText(row[idx]);
-  };
-  return {
-    serial:valueOf('serial'),
-    month:'',
-    docNumber:'',
-    orgName:valueOf('orgName'),
-    taxId:valueOf('taxId'),
-    activityName:valueOf('activityName'),
-    location:valueOf('location'),
-    startDate:valueOf('startDate'),
-    endDate:valueOf('endDate'),
-    budgetAmount:normalizeImportedAmount(valueOf('budgetAmount')),
-    ownFund:normalizeImportedAmount(valueOf('ownFund')),
-    requestedAmount:'',
-    approvedAmount:normalizeImportedAmount(valueOf('approvedAmount')),
-    approvedDate:valueOf('approvedDate'),
-    applyDate:'',
-    responsible:valueOf('responsible'),
-    contact:valueOf('contact'),
-    phone:valueOf('phone'),
-    mailAddress:valueOf('mailAddress'),
-    orgAddress:valueOf('orgAddress'),
-    cgss:false,
-    neighborSystem:false,
-    settlement:null,
-    sourceFileName:'',
-    sourceFileSize:0,
-    sourceFileLastModified:0,
-    importedFromExcel:true
-  };
-}
-
-recordsExcelInput.addEventListener('change', async e=>{
-  const file = e.target.files?.[0];
-  e.target.value = '';
-  if(!file) return;
-  setStatus('recordsImportStatus',`正在讀取「${escapeHtml(file.name)}」…`,'info');
-  try{
-    const buffer = await file.arrayBuffer();
-    const workbook = XLSX.read(buffer, {type:'array', cellDates:false});
-    let selected = null;
-    for(const sheetName of workbook.SheetNames){
-      const rows = XLSX.utils.sheet_to_json(workbook.Sheets[sheetName], {
-        header:1, defval:'', raw:false, blankrows:false
-      });
-      const header = findExcelHeader(rows);
-      if(header && header.score >= 4 && header.fieldIndexes.serial !== undefined && header.fieldIndexes.orgName !== undefined){
-        if(!selected || header.score > selected.header.score){
-          selected = {sheetName, rows, header};
-        }
-      }
-    }
-    if(!selected){
-      throw new Error('找不到可辨識的標題列。Excel 至少需要「序號」與「申請單位」，並建議使用下載的匯入範本。');
-    }
-
-    const {sheetName, rows, header} = selected;
-    const existingSerials = new Set(cases.map(c=>String(c.serial || '').trim()).filter(Boolean));
-    const fileSerials = new Set();
-    const newRecords = [];
-    let missingRequired = 0;
-    let duplicateExisting = 0;
-    let duplicateInFile = 0;
-
-    rows.slice(header.rowIndex + 1).forEach(row=>{
-      const record = importedRecordFromRow(row || [], header.fieldIndexes);
-      const hasAnyData = RECORD_IMPORT_COLUMNS.some(column=>String(record[column.field] || '').trim());
-      if(!hasAnyData) return;
-      record.serial = record.serial.trim();
-      record.orgName = record.orgName.trim();
-      if(!record.serial || !record.orgName){ missingRequired++; return; }
-      if(existingSerials.has(record.serial)){ duplicateExisting++; return; }
-      if(fileSerials.has(record.serial)){ duplicateInFile++; return; }
-      fileSerials.add(record.serial);
-      newRecords.push(record);
-    });
-
-    if(!newRecords.length){
-      const details = [
-        duplicateExisting ? `既有序號 ${duplicateExisting} 筆` : '',
-        duplicateInFile ? `檔案內重複 ${duplicateInFile} 筆` : '',
-        missingRequired ? `缺少序號或申請單位 ${missingRequired} 筆` : ''
-      ].filter(Boolean).join('、');
-      setStatus('recordsImportStatus',`沒有可新增的案件${details ? `（${details}）` : ''}。`,'err');
-      return;
-    }
-
-    const skipped = duplicateExisting + duplicateInFile + missingRequired;
-    const confirmLines = [
-      `工作表：${sheetName}`,
-      `可新增：${newRecords.length} 筆`,
-      duplicateExisting ? `已存在相同序號：${duplicateExisting} 筆（將跳過）` : '',
-      duplicateInFile ? `檔案內重複序號：${duplicateInFile} 筆（將跳過）` : '',
-      missingRequired ? `缺少序號或申請單位：${missingRequired} 筆（將跳過）` : '',
-      '只會匯入「已建檔案件」表格標題列的 16 個欄位，其他 Excel 欄位不會匯入。',
-      '確定要建立到「已建檔案件」嗎？'
-    ].filter(Boolean);
-
-    if(!confirm(confirmLines.join('\n'))){
-      setStatus('recordsImportStatus','已取消匯入，沒有變更任何資料。','info');
-      return;
-    }
-
-    cases = [...newRecords, ...cases];
-    saveCases(cases);
-    renderRecordsTable();
-    document.getElementById('settingsCount').textContent = cases.length;
-    const skippedText = skipped ? `，另跳過 ${skipped} 筆` : '';
-    setStatus('recordsImportStatus',`匯入完成：已從「${escapeHtml(sheetName)}」新增 ${newRecords.length} 筆案件${skippedText}。請抽查日期、金額、統編與電話格式。`,'ok');
-  }catch(err){
-    console.error(err);
-    setStatus('recordsImportStatus',`匯入失敗：${escapeHtml(err.message || '無法讀取 Excel 檔案')}`,'err');
-  }
-});
-
-document.getElementById('btnDownloadRecordsTemplate').addEventListener('click', ()=>{
-  const headers = RECORD_IMPORT_COLUMNS.map(column=>column.title);
-  const example = [
-    '115-001','南投縣○○協會','12345678','○○文化活動','南投縣○○活動中心',
-    '115/7/1','115/7/1','100000','50000','50000','115/6/15',
-    '王○○','李○○','0912-345-678','南投縣○○路1號','南投縣○○路2號'
-  ];
-  const worksheet = XLSX.utils.aoa_to_sheet([headers, example]);
-  worksheet['!cols'] = headers.map((header,index)=>({wch:[8,24,12,24,22,14,14,16,12,16,14,12,12,16,28,28][index]}));
-  const workbook = XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(workbook, worksheet, '匯入範本');
-  XLSX.writeFile(workbook, `已建檔案件匯入範本_${localDateString()}.xlsx`);
-});
 
 function renderRecordsTable(){
   document.getElementById('recordsCount').textContent = cases.length;
@@ -2302,49 +1128,13 @@ document.getElementById('btnExportXlsx').addEventListener('click', ()=>{
   XLSX.writeFile(wb, '睦鄰補助案件總覽_'+new Date().toISOString().slice(0,10)+'.xlsx');
 });
 
-function localDateString(){
-  const d = new Date();
-  const y = d.getFullYear();
-  const m = String(d.getMonth()+1).padStart(2,'0');
-  const day = String(d.getDate()).padStart(2,'0');
-  return `${y}-${m}-${day}`;
-}
-
-function formatDateTime(value){
-  if(!value) return '尚未備份';
-  const d = new Date(value);
-  if(Number.isNaN(d.getTime())) return '時間不明';
-  return d.toLocaleString('zh-TW', {year:'numeric', month:'2-digit', day:'2-digit', hour:'2-digit', minute:'2-digit', hour12:false});
-}
-
-function markBackedUp(){
-  backupMeta.lastBackupAt = new Date().toISOString();
-  backupMeta.dirty = false;
-  backupMeta.changeCount = 0;
-  backupMeta.snoozeUntil = 0;
-  persistBackupMeta();
-  updateBackupUI();
-}
-
-function downloadJsonBackup(){
+document.getElementById('btnExportBackup').addEventListener('click', ()=>{
   const blob = new Blob([JSON.stringify(cases,null,2)], {type:'application/json'});
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
-  a.href = url;
-  a.download = '睦鄰補助案件備份_' + localDateString() + '.json';
-  document.body.appendChild(a);
-  a.click();
-  a.remove();
-  setTimeout(()=>URL.revokeObjectURL(url), 1000);
-  markBackedUp();
-  setStatus('backupActionStatus','已下載 JSON 備份，請將檔案保存到不會被清除的位置。','ok');
-  setTimeout(()=>setStatus('backupActionStatus','',null), 2500);
-}
-
-document.getElementById('btnExportBackup').addEventListener('click', downloadJsonBackup);
-document.getElementById('btnOverviewBackupNow').addEventListener('click', downloadJsonBackup);
-document.getElementById('btnSettingsBackupNow').addEventListener('click', downloadJsonBackup);
-document.getElementById('btnReminderBackup').addEventListener('click', downloadJsonBackup);
+  a.href=url; a.download='睦鄰補助案件備份_'+new Date().toISOString().slice(0,10)+'.json';
+  a.click(); URL.revokeObjectURL(url);
+});
 
 document.getElementById('btnImportBackup').addEventListener('click', ()=>document.getElementById('importInput').click());
 document.getElementById('importInput').addEventListener('change', e=>{
@@ -2354,116 +1144,13 @@ document.getElementById('importInput').addEventListener('change', e=>{
     try{
       const imported = JSON.parse(reader.result);
       if(!Array.isArray(imported)) throw new Error('格式不正確');
-      if(confirm(`確定要匯入 ${imported.length} 筆資料嗎？這會覆蓋目前的資料。系統會先保留目前資料的安全快照。`)){
-        createSafetySnapshot('匯入 JSON 前', cases);
-        cases = imported;
-        saveCases(cases, {skipSnapshot:true, skipDirty:true});
-        markBackedUp();
-        renderOverview(); renderRecordsTable(); renderSettleTable(); renderAuditCaseOptions();
-        document.getElementById('settingsCount').textContent = cases.length;
-        e.target.value = '';
+      if(confirm(`確定要匯入 ${imported.length} 筆資料嗎？這會覆蓋目前的資料。`)){
+        cases = imported; saveCases(cases); renderOverview();
         alert('已還原備份');
       }
     }catch(err){ alert('匯入失敗：'+err.message); }
   };
   reader.readAsText(file);
-});
-
-
-// ---------- 備份提醒與安全快照 ----------
-function loadSafetySnapshot(){
-  try{
-    const parsed = JSON.parse(localStorage.getItem(SAFETY_SNAPSHOT_KEY) || 'null');
-    return parsed && Array.isArray(parsed.cases) ? parsed : null;
-  }catch(e){ return null; }
-}
-
-function backupState(){
-  if(!cases.length){
-    return {kind:'safe', title:'目前沒有案件資料', detail:'新增案件後，系統會開始追蹤備份狀態。'};
-  }
-  if(!backupMeta.lastBackupAt){
-    return {kind:'never', title:'尚未下載過 JSON 備份', detail:`目前有 ${cases.length} 筆案件只存在此瀏覽器。`};
-  }
-  if(backupMeta.dirty){
-    const count = Number(backupMeta.changeCount || 0);
-    return {kind:'dirty', title:'有尚未備份的變更', detail:`上次備份：${formatDateTime(backupMeta.lastBackupAt)}；備份後已修改 ${count} 次。`};
-  }
-  const elapsedDays = Math.floor((Date.now() - new Date(backupMeta.lastBackupAt).getTime()) / 86400000);
-  const reminderDays = Number(backupMeta.reminderDays || 7);
-  if(elapsedDays >= reminderDays){
-    return {kind:'dirty', title:'定期備份時間到了', detail:`上次備份：${formatDateTime(backupMeta.lastBackupAt)}，已經過 ${elapsedDays} 天。`};
-  }
-  return {kind:'safe', title:'資料已有備份', detail:`上次備份：${formatDateTime(backupMeta.lastBackupAt)}，目前沒有未備份變更。`};
-}
-
-function updateBackupUI(){
-  const state = backupState();
-  const indicator = `<span class="backup-indicator ${state.kind}"></span>`;
-
-  const overviewTitle = document.getElementById('overviewBackupTitle');
-  const overviewDetail = document.getElementById('overviewBackupDetail');
-  if(overviewTitle) overviewTitle.innerHTML = indicator + escapeHtml(state.title);
-  if(overviewDetail) overviewDetail.textContent = state.detail;
-
-  const settingsStatus = document.getElementById('settingsBackupStatus');
-  if(settingsStatus) settingsStatus.innerHTML = indicator + escapeHtml(state.title) + `<br><span style="font-size:11.5px;color:var(--ink-soft)">${escapeHtml(state.detail)}</span>`;
-
-  const snapshot = loadSafetySnapshot();
-  const snapshotStatus = document.getElementById('settingsSnapshotStatus');
-  const restoreBtn = document.getElementById('btnRestoreSnapshot');
-  if(snapshotStatus){
-    snapshotStatus.textContent = snapshot
-      ? `${formatDateTime(snapshot.createdAt)}｜${snapshot.reason || '安全快照'}｜${snapshot.cases.length} 筆`
-      : '尚無快照';
-  }
-  if(restoreBtn) restoreBtn.disabled = !snapshot;
-
-  const daysSelect = document.getElementById('backupReminderDays');
-  if(daysSelect) daysSelect.value = String(backupMeta.reminderDays || 7);
-
-  const reminder = document.getElementById('backupReminder');
-  const title = document.getElementById('backupReminderTitle');
-  const detail = document.getElementById('backupReminderDetail');
-  const snoozed = Number(backupMeta.snoozeUntil || 0) > Date.now();
-  const needsReminder = cases.length > 0 && state.kind !== 'safe' && !snoozed;
-  if(reminder) reminder.hidden = !needsReminder;
-  if(title) title.textContent = state.title;
-  if(detail) detail.textContent = state.detail;
-}
-
-document.getElementById('backupReminderDays').addEventListener('change', e=>{
-  backupMeta.reminderDays = Number(e.target.value) || 7;
-  persistBackupMeta();
-  updateBackupUI();
-  setStatus('backupActionStatus','已更新備份提醒間隔。','ok');
-  setTimeout(()=>setStatus('backupActionStatus','',null), 1500);
-});
-
-document.getElementById('btnReminderLater').addEventListener('click', ()=>{
-  backupMeta.snoozeUntil = Date.now() + 24 * 60 * 60 * 1000;
-  persistBackupMeta();
-  updateBackupUI();
-});
-
-document.getElementById('btnRestoreSnapshot').addEventListener('click', ()=>{
-  const snapshot = loadSafetySnapshot();
-  if(!snapshot) return;
-  if(confirm(`確定要還原 ${formatDateTime(snapshot.createdAt)} 的安全快照嗎？目前資料會先再保存成一份快照。`)){
-    createSafetySnapshot('還原舊快照前', cases);
-    cases = snapshot.cases;
-    saveCases(cases, {skipSnapshot:true});
-    renderOverview(); renderRecordsTable(); renderSettleTable(); renderAuditCaseOptions();
-    document.getElementById('settingsCount').textContent = cases.length;
-    setStatus('backupActionStatus','已還原安全快照；目前狀態尚未下載成 JSON，請再執行備份。','ok');
-  }
-});
-
-window.addEventListener('beforeunload', e=>{
-  if(cases.length > 0 && backupMeta.dirty){
-    e.preventDefault();
-    e.returnValue = '';
-  }
 });
 
 // ---------- 設定 Tab ----------
@@ -2481,25 +1168,15 @@ document.getElementById('btnClearKey').addEventListener('click', ()=>{
   setTimeout(()=>setStatus('keyStatus','',null), 1200);
 });
 document.getElementById('btnWipeAll').addEventListener('click', ()=>{
-  if(confirm('確定要清空全部案件資料嗎？系統會先建立一份本機安全快照，但仍建議先下載 JSON 備份。')){
-    createSafetySnapshot('清空全部資料前', cases);
-    cases = [];
-    saveCases(cases, {skipSnapshot:true, skipDirty:true});
-    backupMeta.dirty = false;
-    backupMeta.changeCount = 0;
-    persistBackupMeta();
-    renderOverview(); renderRecordsTable(); renderSettleTable(); renderAuditCaseOptions();
+  if(confirm('確定要清空全部案件資料嗎？此動作無法復原，建議先備份。')){
+    cases = []; saveCases(cases); renderOverview();
     document.getElementById('settingsCount').textContent = 0;
-    updateBackupUI();
-    alert('已清空。需要時可在設定頁還原最近安全快照。');
+    alert('已清空');
   }
 });
 
 // init
 clearForm();
-renderAuditCaseOptions();
-document.getElementById('settingsCount').textContent = cases.length;
-updateBackupUI();
 </script>
 </body>
 </html>
