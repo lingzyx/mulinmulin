@@ -149,12 +149,17 @@
   #recordsTable th:nth-child(6), #recordsTable td:nth-child(6),
   #recordsTable th:nth-child(7), #recordsTable td:nth-child(7){width:76px;}
   #recordsTable th:nth-child(1){width:64px;}
+  #recordsTable th:nth-child(2){width:150px;}
   #recordsTable th:nth-child(3){width:90px;}
+  #recordsTable th:nth-child(4){width:170px;}
+  #recordsTable th:nth-child(5){width:150px;}
   #recordsTable th:nth-child(8), #recordsTable th:nth-child(9), #recordsTable th:nth-child(10){width:88px;}
   #recordsTable th:nth-child(11){width:76px;}
   #recordsTable th:nth-child(12), #recordsTable th:nth-child(13){width:70px;}
   #recordsTable th:nth-child(14){width:100px;}
-  #recordsTable th:nth-child(17){width:110px;}
+  #recordsTable th:nth-child(17){width:64px;}
+  #recordsTable .row-actions{display:flex; flex-direction:column; gap:4px; align-items:stretch;}
+  #recordsTable .row-actions .btn{width:100%; justify-content:center; padding:5px 6px;}
   table.settle-table input[type=text], table.settle-table input[type=number], table.settle-table select{
     width:100%; border:1px solid transparent; background:transparent; padding:4px 3px;
     font-family:'Noto Sans TC', sans-serif; font-size:12px; border-radius:3px; color:var(--ink); text-align:center;
@@ -1055,8 +1060,10 @@ function renderRecordsTable(){
       <td class="org-cell">${escHtml(c.mailAddress||'—')}</td>
       <td class="org-cell">${escHtml(c.orgAddress||'—')}</td>
       <td>
-        <button type="button" class="btn secondary small" data-edit="${escAttr(c.serial)}">編輯</button>
-        <button type="button" class="btn danger small" data-delete="${escAttr(c.serial)}">刪除</button>
+        <div class="row-actions">
+          <button type="button" class="btn secondary small" data-edit="${escAttr(c.serial)}">編輯</button>
+          <button type="button" class="btn danger small" data-delete="${escAttr(c.serial)}">刪除</button>
+        </div>
       </td>
     </tr>`;
   }).join('');
