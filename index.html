@@ -149,10 +149,10 @@
   #recordsTable th:nth-child(6), #recordsTable td:nth-child(6),
   #recordsTable th:nth-child(7), #recordsTable td:nth-child(7){width:76px;}
   #recordsTable th:nth-child(1){width:64px;}
-  #recordsTable th:nth-child(2){width:140px;}
+  #recordsTable th:nth-child(2){width:120px;}
   #recordsTable th:nth-child(3){width:90px;}
-  #recordsTable th:nth-child(4){width:140px;}
-  #recordsTable th:nth-child(5){width:140px;}
+  #recordsTable th:nth-child(4){width:120px;}
+  #recordsTable th:nth-child(5){width:120px;}
   #recordsTable th:nth-child(8), #recordsTable th:nth-child(9), #recordsTable th:nth-child(10){width:88px;}
   #recordsTable th:nth-child(11){width:76px;}
   #recordsTable th:nth-child(12), #recordsTable th:nth-child(13){width:70px;}
@@ -1036,7 +1036,7 @@ function renderRecordsTable(){
   const tbody = document.getElementById('recordsTableBody');
   const list = cases.filter(c=>
     !q || (c.orgName||'').includes(q) || (c.serial||'').includes(q) || (String(c.taxId)||'').includes(q) || (c.activityName||'').includes(q)
-  );
+  ).sort((a,b)=>String(a.serial||'').localeCompare(String(b.serial||''), 'zh-Hant', {numeric:true}));
   if(!list.length){
     tbody.innerHTML = `<tr><td colspan="17" class="hint" style="padding:16px;">${cases.length? '找不到符合條件的案件':'還沒有任何建檔資料，請先上傳核准公文或手動輸入。'}</td></tr>`;
     return;
