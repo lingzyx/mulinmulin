@@ -209,51 +209,45 @@
   }
   .remove-btn:hover{color:var(--warn);}
 
-  /* AI 核銷文件檢查 */
-  .audit-file-list{display:grid; gap:7px; margin-top:10px;}
-  .audit-file-row{
-    display:flex; justify-content:space-between; align-items:center; gap:10px;
-    padding:9px 11px; border:1px solid var(--line); border-radius:5px; background:#fffefb;
-  }
-  .audit-file-name{font-size:13px; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
-  .audit-file-meta{font-size:11.5px; color:var(--ink-soft); white-space:nowrap;}
-  .audit-result-head{display:flex; align-items:flex-start; justify-content:space-between; gap:12px; flex-wrap:wrap;}
-  .audit-verdict{font-family:'Shippori Mincho', serif; font-size:20px; color:var(--pine-deep);}
-  .audit-summary-text{font-size:13.5px; color:var(--ink); line-height:1.7; margin-top:6px;}
-  .audit-status{
-    display:inline-block; min-width:62px; text-align:center; padding:3px 8px; border-radius:12px;
-    font-size:11.5px; font-weight:500; white-space:nowrap;
-  }
-  .audit-status.pass{background:#e3ede6; color:var(--ok);}
-  .audit-status.warn{background:#f2ead3; color:#8a6a1f;}
-  .audit-status.fail{background:#f6e2dc; color:var(--warn);}
-  .audit-status.unknown{background:#e8eef2; color:#31566d;}
-  table.audit-table{min-width:980px;}
-  table.audit-table th:nth-child(1){width:74px;}
-  table.audit-table th:nth-child(2){width:110px;}
-  table.audit-table th:nth-child(3){width:180px;}
-  table.audit-table td{line-height:1.6;}
-  .audit-evidence{font-size:11.5px; color:var(--ink-soft); margin-top:3px;}
-  .audit-section-title{font-size:14px; font-weight:500; color:var(--pine-deep); margin:16px 0 7px;}
-  .audit-list{margin:0; padding-left:20px; font-size:13px; line-height:1.8;}
-  .audit-empty{font-size:12.5px; color:var(--ink-soft);}
-  .audit-note{
-    background:#f2ead3; border:1px solid #dfd0a5; color:#6f581e;
-    padding:9px 11px; border-radius:5px; font-size:12.5px; line-height:1.65; margin-top:12px;
-  }
-  #auditCorrectionNotice{min-height:150px; line-height:1.7;}
-  #auditCaseSuggestions{margin-top:8px; display:flex; flex-direction:column; gap:6px;}
-  .audit-case-search-row{display:flex; gap:8px; align-items:flex-end;}
-  .audit-case-search-row input{flex:1;}
-  .audit-case-selected{
+  /* 核銷文件檢核表（人工勾選） */
+  .checklist-case-search-row{display:flex; gap:8px; align-items:flex-end;}
+  .checklist-case-search-row input{flex:1;}
+  #checklistCaseSuggestions{margin-top:8px; display:flex; flex-direction:column; gap:6px;}
+  .checklist-case-selected{
     display:flex; justify-content:space-between; align-items:center; gap:10px;
     padding:10px 12px; margin-top:8px; border:1px solid var(--pine);
     border-radius:5px; background:#eef2ee;
   }
-  .audit-case-selected-main{min-width:0;}
-  .audit-case-selected-title{font-size:13.5px; font-weight:500; color:var(--pine-deep);}
-  .audit-case-selected-meta{font-size:11.5px; color:var(--ink-soft); margin-top:2px;}
-
+  .checklist-case-selected-main{min-width:0;}
+  .checklist-case-selected-title{font-size:13.5px; font-weight:500; color:var(--pine-deep);}
+  .checklist-case-selected-meta{font-size:11.5px; color:var(--ink-soft); margin-top:2px;}
+  .checklist-progress-head{display:flex; justify-content:space-between; align-items:baseline; gap:10px; flex-wrap:wrap;}
+  .checklist-progress-title{font-family:'Shippori Mincho', serif; font-size:17px; color:var(--pine-deep);}
+  .checklist-progress-text{font-size:12.5px; color:var(--ink-soft);}
+  .checklist-bar{height:8px; background:var(--paper-deep); border-radius:4px; overflow:hidden; margin:8px 0 4px;}
+  .checklist-bar > span{display:block; height:100%; background:var(--pine); transition:width .2s;}
+  .checklist-section{margin-top:18px;}
+  .checklist-section-title{
+    font-size:14px; font-weight:500; color:var(--pine-deep); padding-bottom:5px;
+    border-bottom:1px solid var(--line); display:flex; justify-content:space-between; gap:8px;
+  }
+  .checklist-section-count{font-size:11.5px; color:var(--ink-soft); font-weight:400;}
+  .checklist-item{
+    display:flex; align-items:flex-start; justify-content:space-between; gap:10px;
+    padding:9px 6px; border-bottom:1px dashed var(--line);
+  }
+  .checklist-item.done{background:#eef5ef;}
+  .checklist-item.na{background:#f3f0e8; opacity:.75;}
+  .checklist-item label{margin:0; display:flex; gap:9px; align-items:flex-start; cursor:pointer; color:var(--ink);}
+  .checklist-item label.item-main{flex:1; font-size:13.5px; line-height:1.6;}
+  .checklist-item input[type=checkbox]{width:auto; margin-top:4px; flex-shrink:0;}
+  .checklist-num{color:var(--clay); font-size:11.5px; font-weight:500; min-width:18px; margin-top:2px;}
+  .checklist-cond{
+    display:inline-block; margin-left:6px; padding:0 6px; border-radius:8px; font-size:10.5px;
+    background:#f2ead3; color:#8a6a1f; vertical-align:1px;
+  }
+  .checklist-item label.na-box{font-size:11.5px; color:var(--ink-soft); white-space:nowrap; align-items:center;}
+  .checklist-item label.na-box input{margin-top:0;}
 
   /* 備份提醒與安全快照 */
   [hidden]{display:none !important;}
@@ -301,7 +295,7 @@
   <button data-tab="register" class="active">📄 核准文件建檔</button>
   <button data-tab="records">📁 已建檔案件</button>
   <button data-tab="settle">🔍 核銷查詢登錄</button>
-  <button data-tab="audit">🤖 AI 核銷文件檢查</button>
+  <button data-tab="checklist">✅ 核銷檢核表</button>
   <button data-tab="overview">📋 總覽 / 匯出</button>
   <button data-tab="settings">⚙️ 設定</button>
 </nav>
@@ -467,111 +461,45 @@
   </section>
 
 
-  <!-- ===================== AI 核銷檢查 TAB ===================== -->
-  <section id="tab-audit" style="display:none;">
+  <!-- ===================== 核銷檢核表 TAB ===================== -->
+  <section id="tab-checklist" style="display:none;">
     <div class="card narrow">
-      <h2>AI 核銷文件檢查</h2>
-      <div class="hint">選擇已建檔案件，再上傳協會送來的核銷 PDF 或照片。AI 會依「台電南投區處睦鄰補助案件檢核表」逐項檢查文件完整性、跨文件資料、章戳、銀行帳戶、金額、印花、支用單據及成果照片，並產生補件文字。</div>
-
+      <h2>核銷文件檢核表</h2>
+      <div class="hint">依「台電南投區處睦鄰補助案件檢核表」，協會送來核銷文件時，選擇案件後逐項勾選文件是否符合。勾選結果會自動儲存在該案件中，下次再選同一案件會保留。</div>
       <label>對應案件</label>
-      <div class="audit-case-search-row">
-        <input type="text" id="auditCaseSearchInput" placeholder="輸入序號、申請單位、統編或活動名稱" autocomplete="off">
-        <button type="button" class="btn secondary small" id="btnClearAuditCase" disabled>清除對應</button>
+      <div class="checklist-case-search-row">
+        <input type="text" id="checklistCaseSearchInput" placeholder="輸入單位名稱關鍵字、序號、統編或活動名稱" autocomplete="off">
+        <button type="button" class="btn secondary small" id="btnClearChecklistCase" disabled>清除對應</button>
       </div>
-      <input type="hidden" id="auditCaseSerial" value="">
-      <div id="auditCaseSuggestions"></div>
-      <div class="audit-case-selected" id="auditSelectedCase" style="display:none;">
-        <div class="audit-case-selected-main">
-          <div class="audit-case-selected-title" id="auditSelectedCaseTitle"></div>
-          <div class="audit-case-selected-meta" id="auditSelectedCaseMeta"></div>
+      <div id="checklistCaseSuggestions"></div>
+      <div class="checklist-case-selected" id="checklistSelectedCase" style="display:none;">
+        <div class="checklist-case-selected-main">
+          <div class="checklist-case-selected-title" id="checklistSelectedCaseTitle"></div>
+          <div class="checklist-case-selected-meta" id="checklistSelectedCaseMeta"></div>
         </div>
-        <button type="button" class="btn secondary small" id="btnChangeAuditCase">更換</button>
+        <button type="button" class="btn secondary small" id="btnChangeChecklistCase">更換</button>
       </div>
-      <div class="hint" id="auditCaseHint" style="margin-top:5px;"></div>
-
-      <div class="row">
-        <div>
-          <label>團體類型（供條件式文件判斷）</label>
-          <select id="auditOrgType">
-            <option value="unknown">不確定／由文件判斷</option>
-            <option value="people">一般人民團體</option>
-            <option value="corporate">社團法人團體</option>
-            <option value="government">政府機關或學校</option>
-          </select>
-        </div>
-        <div style="display:flex; align-items:flex-end; padding-bottom:4px;">
-          <label class="checkline" style="margin:0;"><input type="checkbox" id="auditCompletePackage" checked> 本次上傳為完整核銷文件包</label>
-        </div>
-      </div>
-      <div class="hint">若只上傳部分文件，請取消勾選；否則未看到的必要文件會被列為疑似缺漏。</div>
-
-      <label>核銷文件</label>
-      <div class="file-drop" id="auditDropZone">
-        點選或拖曳 PDF、JPG、PNG 到這裡<br>
-        <span style="font-size:11.5px;">最多 10 件，合計不超過 45 MB</span>
-      </div>
-      <input type="file" id="auditFileInput" accept="application/pdf,image/jpeg,image/png,.pdf,.jpg,.jpeg,.png" multiple style="display:none;">
-      <div id="auditFileList" class="audit-file-list"></div>
-
-      <div class="grid-actions">
-        <button class="btn" id="btnRunAudit" disabled>✨ 開始 AI 檢查</button>
-        <button class="btn secondary" id="btnClearAuditFiles" disabled>清除文件</button>
-      </div>
-      <div id="auditStatus"></div>
-      <div class="audit-note">AI 檢查是初步輔助，無法取代承辦人與會計的最終審核。看不清楚、文件未上傳或規定需人工判斷時，系統會標示「無法判斷」。</div>
+      <div class="hint" id="checklistCaseHint" style="margin-top:6px;">請先選擇要檢核的案件。</div>
     </div>
 
-    <div class="card" id="auditResultCard" style="display:none;">
-      <div class="audit-result-head">
-        <div>
-          <h2>檢查結果</h2>
-          <div class="audit-verdict" id="auditVerdict"></div>
-          <div class="audit-summary-text" id="auditSummary"></div>
-        </div>
-        <div class="stat-bar" style="min-width:min(100%,480px); flex:1;">
-          <div class="stat-box"><div class="stat-label">通過</div><div class="stat-value" id="auditPassCount">0</div></div>
-          <div class="stat-box"><div class="stat-label">提醒</div><div class="stat-value" id="auditWarnCount">0</div></div>
-          <div class="stat-box"><div class="stat-label">缺失</div><div class="stat-value" id="auditFailCount">0</div></div>
-          <div class="stat-box"><div class="stat-label">待人工確認</div><div class="stat-value" id="auditUnknownCount">0</div></div>
-        </div>
+    <div class="card narrow" id="checklistCard" style="display:none;">
+      <div class="checklist-progress-head">
+        <div class="checklist-progress-title" id="checklistProgressTitle"></div>
+        <div class="checklist-progress-text" id="checklistProgressText"></div>
       </div>
+      <div class="checklist-bar"><span id="checklistBar" style="width:0%"></span></div>
+      <div class="hint" style="margin:0;">勾選「符合」代表該項已確認；條件式項目若不適用本案，請勾「不適用」。</div>
 
-      <div class="divider"></div>
+      <div id="checklistBody"></div>
 
-      <div class="audit-section-title">文件完整性</div>
-      <div id="auditDocumentChecklist"></div>
-
-      <div class="audit-section-title">跨文件資料一致性</div>
-      <div id="auditCrossChecks"></div>
-
-      <div class="audit-section-title">成果照片專項檢查</div>
-      <div id="auditPhotoReview"></div>
-
-      <div class="audit-section-title">逐項檢核結果</div>
-      <div style="overflow-x:auto;">
-        <table class="audit-table">
-          <thead><tr><th>結果</th><th>類別</th><th>檢查項目</th><th>AI 判斷與依據</th><th>建議處理</th></tr></thead>
-          <tbody id="auditChecksBody"></tbody>
-        </table>
-      </div>
-
-      <div class="audit-section-title">金額與印花檢查</div>
-      <div id="auditAmountChecks"></div>
-
-      <div class="audit-section-title">疑似缺少文件</div>
-      <div id="auditMissingDocs"></div>
-
-      <div class="audit-section-title">待人工確認</div>
-      <div id="auditUncertainty"></div>
-
-      <label>AI 產生的補件通知文字</label>
-      <textarea id="auditCorrectionNotice"></textarea>
+      <label style="margin-top:16px;">備註（例如需協會補正的說明）</label>
+      <textarea id="checklistNotes" placeholder="其他需要提醒協會或自己記錄的事項..."></textarea>
       <div class="grid-actions">
-        <button class="btn secondary" id="btnCopyAuditNotice">複製補件文字</button>
-        <button class="btn secondary" id="btnSaveAuditRecord">儲存檢查紀錄</button>
-        <button class="btn" id="btnWriteAuditNotes">寫入核銷備註</button>
+        <button class="btn secondary" id="btnCopyChecklistNotice" type="button">複製補件清單</button>
+        <button class="btn" id="btnWriteChecklistNotes" type="button">寫入核銷備註</button>
+        <button class="btn danger" id="btnResetChecklist" type="button">清除全部勾選</button>
       </div>
-      <div id="auditSaveStatus"></div>
+      <div id="checklistStatus"></div>
     </div>
   </section>
 
@@ -741,13 +669,13 @@ document.querySelectorAll('#tabs button').forEach(btn=>{
   btn.addEventListener('click', ()=>{
     document.querySelectorAll('#tabs button').forEach(b=>b.classList.remove('active'));
     btn.classList.add('active');
-    ['register','records','settle','audit','overview','settings'].forEach(t=>{
+    ['register','records','settle','checklist','overview','settings'].forEach(t=>{
       document.getElementById('tab-'+t).style.display = (t===btn.dataset.tab)?'block':'none';
     });
     if(btn.dataset.tab==='overview') renderOverview();
     if(btn.dataset.tab==='records') renderRecordsTable();
     if(btn.dataset.tab==='settle') renderSettleTable();
-    if(btn.dataset.tab==='audit') renderAuditCaseOptions();
+    if(btn.dataset.tab==='checklist') renderChecklistCase();
     if(btn.dataset.tab==='settings'){ document.getElementById('settingsCount').textContent = cases.length; updateBackupUI(); }
   });
 });
@@ -773,98 +701,6 @@ const EXTRACTION_PROMPT = `這是一份社區/協會向台電睦鄰計畫申請�
 6. 日期盡量統一為民國年格式，例如 115/2/26。
 
 欄位：month、docNumber、orgName、taxId、activityName、location、startDate、endDate、budgetAmount、ownFund、requestedAmount、approvedAmount、approvedDate、applyDate、responsible、contact、phone、mailAddress、orgAddress。`;
-
-const AUDIT_RESPONSE_SCHEMA = {
-  type:'OBJECT',
-  properties:{
-    verdict:{type:'STRING', enum:['大致完整','需要補件','疑似重大問題','無法判斷']},
-    summary:{type:'STRING'},
-    documentChecklist:{
-      type:'ARRAY',
-      items:{
-        type:'OBJECT',
-        properties:{
-          documentName:{type:'STRING'},
-          requirement:{type:'STRING', enum:['必要','條件式','參考']},
-          status:{type:'STRING', enum:['已提供','疑似缺少','不適用','無法判斷']},
-          foundIn:{type:'STRING'},
-          finding:{type:'STRING'},
-          suggestion:{type:'STRING'}
-        },
-        required:['documentName','requirement','status','foundIn','finding','suggestion']
-      }
-    },
-    crossChecks:{
-      type:'ARRAY',
-      items:{
-        type:'OBJECT',
-        properties:{
-          field:{type:'STRING'},
-          referenceValue:{type:'STRING'},
-          observedValues:{type:'STRING'},
-          status:{type:'STRING', enum:['通過','提醒','缺失','無法判斷']},
-          explanation:{type:'STRING'}
-        },
-        required:['field','referenceValue','observedValues','status','explanation']
-      }
-    },
-    photoReview:{
-      type:'OBJECT',
-      properties:{
-        photoCount:{type:'STRING'},
-        minimumRequired:{type:'STRING'},
-        eventScenePhotos:{type:'STRING'},
-        sponsorIdentification:{type:'STRING'},
-        energySavingBanner:{type:'STRING'},
-        dateAndStamp:{type:'STRING'},
-        participantCountExplanation:{type:'STRING'},
-        status:{type:'STRING', enum:['通過','提醒','缺失','無法判斷']},
-        explanation:{type:'STRING'}
-      },
-      required:['photoCount','minimumRequired','eventScenePhotos','sponsorIdentification','energySavingBanner','dateAndStamp','participantCountExplanation','status','explanation']
-    },
-    checks:{
-      type:'ARRAY',
-      items:{
-        type:'OBJECT',
-        properties:{
-          category:{type:'STRING'},
-          item:{type:'STRING'},
-          status:{type:'STRING', enum:['通過','提醒','缺失','無法判斷']},
-          finding:{type:'STRING'},
-          evidence:{type:'STRING'},
-          sourceFile:{type:'STRING'},
-          page:{type:'STRING'},
-          suggestion:{type:'STRING'}
-        },
-        required:['category','item','status','finding','evidence','sourceFile','page','suggestion']
-      }
-    },
-    amountChecks:{
-      type:'ARRAY',
-      items:{
-        type:'OBJECT',
-        properties:{
-          item:{type:'STRING'}, expected:{type:'STRING'}, found:{type:'STRING'},
-          status:{type:'STRING', enum:['通過','提醒','缺失','無法判斷']}, explanation:{type:'STRING'}
-        },
-        required:['item','expected','found','status','explanation']
-      }
-    },
-    stampTax:{
-      type:'OBJECT',
-      properties:{
-        receiptAmount:{type:'STRING'}, expectedStamp:{type:'STRING'}, observedStamp:{type:'STRING'},
-        status:{type:'STRING', enum:['通過','提醒','缺失','無法判斷']}, explanation:{type:'STRING'}
-      },
-      required:['receiptAmount','expectedStamp','observedStamp','status','explanation']
-    },
-    missingDocuments:{type:'ARRAY', items:{type:'STRING'}},
-    uncertainty:{type:'ARRAY', items:{type:'STRING'}},
-    correctionNotice:{type:'STRING'}
-  },
-  required:['verdict','summary','documentChecklist','crossChecks','photoReview','checks','amountChecks','stampTax','missingDocuments','uncertainty','correctionNotice']
-};
 
 const RESPONSE_SCHEMA = {
   type:'OBJECT',
@@ -1437,20 +1273,70 @@ document.getElementById('settleTableBody').addEventListener('change', e=>{
 });
 
 
-// ---------- AI 核銷文件檢查 ----------
-const auditCaseSearchInput = document.getElementById('auditCaseSearchInput');
-const auditCaseSerialInput = document.getElementById('auditCaseSerial');
-const auditCaseSuggestions = document.getElementById('auditCaseSuggestions');
-const btnClearAuditCase = document.getElementById('btnClearAuditCase');
-const btnChangeAuditCase = document.getElementById('btnChangeAuditCase');
-const auditDropZone = document.getElementById('auditDropZone');
-const auditFileInput = document.getElementById('auditFileInput');
-const btnRunAudit = document.getElementById('btnRunAudit');
-const btnClearAuditFiles = document.getElementById('btnClearAuditFiles');
-let auditFiles = [];
-let auditRunning = false;
-let currentAuditResult = null;
-let currentAuditCaseSerial = '';
+// ---------- 核銷文件檢核表（人工勾選） ----------
+const CHECKLIST_SECTIONS = [
+  {title:'受捐助單位入戶申請書', items:[
+    {t:'申請單位、活動名稱、補助金額(大寫)與核准函一致'},
+    {t:'銀行名稱、代碼、帳號、戶名已填妥，並與銀行存摺影本一致'},
+    {t:'填寫單位名稱、負責人姓名，並蓋上單位圖記、負責人章'}
+  ]},
+  {title:'存摺影本', items:[
+    {t:'蓋單位圖記、負責人章於騎縫處'}
+  ]},
+  {title:'領款收據', items:[
+    {t:'活動名稱、補助金額(大寫)與核准函一致'},
+    {t:'具領單位、銀行戶名、統編、地址、負責人、主辦會計、承辦人等資料與姓名已填妥'},
+    {t:'會址如果和立案證書不同，請提供會址變更公文函或扣繳憑單或扣繳單位設立登記申請書等文件證明', cond:true},
+    {t:'蓋負責人、主辦會計、承辦人印章、單位圖記章'},
+    {t:'附上印花稅票(補助金額的千分之四)(請不要直接黏貼於文件上)'}
+  ]},
+  {title:'切結書', items:[
+    {t:'活動日期、名稱與核准函一致'},
+    {t:'單位名稱、負責人、地址等資料已填妥'},
+    {t:'蓋單位圖記章、負責人章'}
+  ]},
+  {title:'實際支用經費明細表', items:[
+    {t:'請款單位、活動名稱、請款總金額(大寫)與核准函一致'},
+    {t:'應列出所有支用項目之數量、單位、單價、金額，且必須與所檢附之支用收據相同(如有差額請敘明原因)'},
+    {t:'蓋承辦人、複核、會計、負責人章、單位圖記章'}
+  ]},
+  {title:'支出憑證黏存單', items:[
+    {t:'貼上本公司補助經費同額（或以上）之支用單據正本，並於騎縫處加蓋單位圖記或承辦人印章（支用單據指「統一發票」或「收據」）'},
+    {t:'支用單據品名、數量、單價必須與實際支用經費明細表相符'},
+    {t:'支用單據上要有日期（日期不晚於活動日期）'},
+    {t:'支用單據之買受人，應為受補助對象，須正確書寫完整全名，不得塗改'},
+    {t:'支用單據之金額欄應正確書寫，不得塗改'}
+  ]},
+  {title:'成果報告', items:[
+    {t:'請款單位、活動名稱、活動日期、地點與原核准文件一致'},
+    {t:'填寫活動成果說明、活動照片張數'},
+    {t:'蓋單位圖記章、負責人章'},
+    {t:'若活動照片無法完整呈現參加人數，請提供說明（例如：活動照片因攝影角度、場地空間布局、人員流動等因素，無法完整呈現參加人數）', cond:true}
+  ]},
+  {title:'成果照片', items:[
+    {t:'請檢附現場及進行中之彩色照片至少 4 張'},
+    {t:'至少 1 張照片為現場布置有活動布條、背板或其他型式可清楚辨識「主辦單位、活動名稱、贊助單位：台灣電力公司」'},
+    {t:'至少 1 張照片為現場懸掛宣導節能標語布條，且可清楚辨識「台灣電力公司 廣告」'},
+    {t:'照片上之日期必須與活動日期相符，如照片上無法顯示日期者，請標註並加蓋承辦人印章（「每張」照片標註日期旁都要蓋章）'}
+  ]},
+  {title:'其他', items:[
+    {t:'若人民團體立案證書無會址所在地詳細地址，請提供會址變更公文函或扣繳單位設立登記申請書等文件並蓋上大小章', cond:true},
+    {t:'社團法人團體請提供法人登記證書', cond:true}
+  ]}
+];
+(function numberChecklistItems(){
+  let n = 0;
+  CHECKLIST_SECTIONS.forEach(sec=>sec.items.forEach(item=>{ item.id = String(++n); }));
+})();
+const CHECKLIST_TOTAL = CHECKLIST_SECTIONS.reduce((sum,sec)=>sum+sec.items.length,0);
+
+const checklistCaseSearchInput = document.getElementById('checklistCaseSearchInput');
+const checklistCaseSuggestions = document.getElementById('checklistCaseSuggestions');
+const btnClearChecklistCase = document.getElementById('btnClearChecklistCase');
+const btnChangeChecklistCase = document.getElementById('btnChangeChecklistCase');
+const checklistBody = document.getElementById('checklistBody');
+const checklistNotes = document.getElementById('checklistNotes');
+let checklistSerial = '';
 
 function localDateTimeText(){
   const d = new Date();
@@ -1458,565 +1344,275 @@ function localDateTimeText(){
   return `${d.getFullYear()}/${pad(d.getMonth()+1)}/${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
 }
 
-function normalizeAuditSearch(value){
+function normalizeSearchText(value){
   return String(value || '').trim().toLocaleLowerCase('zh-Hant');
 }
 
-function getSelectedAuditCase(){
-  return cases.find(item=>item.serial===auditCaseSerialInput.value) || null;
+function getChecklistCase(){
+  return cases.find(item=>item.serial===checklistSerial) || null;
 }
 
-function renderAuditCaseOptions(){
-  const selected = getSelectedAuditCase();
-  if(auditCaseSerialInput.value && !selected){
-    auditCaseSerialInput.value = '';
-    auditCaseSearchInput.value = '';
+function ensureChecklist(c){
+  if(!c.checklist || typeof c.checklist !== 'object') c.checklist = {};
+  if(!c.checklist.items || typeof c.checklist.items !== 'object') c.checklist.items = {};
+  if(typeof c.checklist.notes !== 'string') c.checklist.notes = '';
+  return c.checklist;
+}
+
+function checklistStats(c){
+  const items = (c && c.checklist && c.checklist.items) || {};
+  let ok = 0, na = 0;
+  CHECKLIST_SECTIONS.forEach(sec=>sec.items.forEach(item=>{
+    if(items[item.id]==='ok') ok++;
+    else if(items[item.id]==='na') na++;
+  }));
+  const required = CHECKLIST_TOTAL - na;
+  return {ok, na, required, remaining: Math.max(0, required - ok)};
+}
+
+function renderChecklistCase(){
+  const selected = getChecklistCase();
+  if(checklistSerial && !selected){
+    checklistSerial = '';
+    checklistCaseSearchInput.value = '';
   }
-  renderAuditCaseSuggestions();
-  updateAuditCaseHint();
+  renderChecklistSuggestions();
+  updateChecklistHeader();
+  renderChecklistBody();
 }
 
-function renderAuditCaseSuggestions(){
-  const q = normalizeAuditSearch(auditCaseSearchInput.value);
-  if(!q || auditCaseSerialInput.value){
-    auditCaseSuggestions.innerHTML = '';
+function renderChecklistSuggestions(){
+  const q = normalizeSearchText(checklistCaseSearchInput.value);
+  if(!q || checklistSerial){
+    checklistCaseSuggestions.innerHTML = '';
     return;
   }
-
-  const matches = [...cases]
-    .filter(c=>[
-      c.serial, c.orgName, c.taxId, c.activityName, c.location,
-      c.responsible, c.contact
-    ].some(value=>normalizeAuditSearch(value).includes(q)))
+  const matches = cases
+    .filter(c=>[c.serial, c.orgName, c.taxId, c.activityName, c.location, c.responsible, c.contact]
+      .some(value=>normalizeSearchText(value).includes(q)))
     .sort((a,b)=>String(a.serial||'').localeCompare(String(b.serial||''), 'zh-Hant', {numeric:true}))
     .slice(0,10);
-
   if(!matches.length){
-    auditCaseSuggestions.innerHTML = '<div class="hint" style="margin-top:7px;">找不到符合的已建檔案件。可改用序號、單位名稱、統編或活動名稱搜尋。</div>';
+    checklistCaseSuggestions.innerHTML = '<div class="hint" style="margin-top:7px;">找不到符合的已建檔案件。可改用序號、單位名稱、統編或活動名稱搜尋。</div>';
     return;
   }
-
-  auditCaseSuggestions.innerHTML = matches.map(c=>`
-    <div class="suggest-item audit-case-option" data-serial="${escAttr(c.serial)}">
+  checklistCaseSuggestions.innerHTML = matches.map(c=>{
+    const st = checklistStats(c);
+    const progress = c.checklist ? `已檢核 ${st.ok}/${st.required}` : '尚未檢核';
+    return `<div class="suggest-item checklist-case-option" data-serial="${escAttr(c.serial)}">
       <div class="s-main">
         <div class="s-serial">${escHtml(c.serial)}</div>
         <div class="s-org">${escHtml(c.orgName||'未填單位')}</div>
-        <div class="s-meta">${escHtml(c.activityName||'未填活動')} · 統編 ${escHtml(c.taxId||'—')} · 核定 ${c.approvedAmount?Number(c.approvedAmount).toLocaleString():'—'} 元</div>
+        <div class="s-meta">${escHtml(c.activityName||'未填活動')} · 核定 ${c.approvedAmount?Number(c.approvedAmount).toLocaleString():'—'} 元 · ${progress}</div>
       </div>
       <button class="s-add" type="button">選擇</button>
-    </div>`).join('');
-
-  auditCaseSuggestions.querySelectorAll('.audit-case-option').forEach(el=>{
-    el.addEventListener('click', ()=>selectAuditCase(el.dataset.serial));
+    </div>`;
+  }).join('');
+  checklistCaseSuggestions.querySelectorAll('.checklist-case-option').forEach(el=>{
+    el.addEventListener('click', ()=>selectChecklistCase(el.dataset.serial));
   });
 }
 
-function selectAuditCase(serial){
+function selectChecklistCase(serial){
   const c = cases.find(item=>item.serial===serial);
   if(!c) return;
-  auditCaseSerialInput.value = c.serial;
-  auditCaseSearchInput.value = '';
-  auditCaseSuggestions.innerHTML = '';
-  updateAuditCaseHint();
+  checklistSerial = c.serial;
+  checklistCaseSearchInput.value = '';
+  checklistCaseSuggestions.innerHTML = '';
+  updateChecklistHeader();
+  renderChecklistBody();
+  document.getElementById('checklistCard').scrollIntoView({behavior:'smooth', block:'start'});
 }
 
-function clearAuditCaseSelection(focusSearch=false){
-  auditCaseSerialInput.value = '';
-  auditCaseSearchInput.value = '';
-  auditCaseSuggestions.innerHTML = '';
-  updateAuditCaseHint();
-  if(focusSearch) auditCaseSearchInput.focus();
+function clearChecklistCase(focusSearch=false){
+  checklistSerial = '';
+  checklistCaseSearchInput.value = '';
+  checklistCaseSuggestions.innerHTML = '';
+  updateChecklistHeader();
+  renderChecklistBody();
+  setStatus('checklistStatus','',null);
+  if(focusSearch) checklistCaseSearchInput.focus();
 }
 
-function updateAuditCaseHint(){
-  const c = getSelectedAuditCase();
-  const hint = document.getElementById('auditCaseHint');
-  const selectedBox = document.getElementById('auditSelectedCase');
-  const selectedTitle = document.getElementById('auditSelectedCaseTitle');
-  const selectedMeta = document.getElementById('auditSelectedCaseMeta');
-
+function updateChecklistHeader(){
+  const c = getChecklistCase();
+  const box = document.getElementById('checklistSelectedCase');
+  const hint = document.getElementById('checklistCaseHint');
   if(!c){
-    selectedBox.style.display = 'none';
-    btnClearAuditCase.disabled = true;
-    hint.textContent = '尚未選擇案件。未綁定案件時，AI 仍可檢查文件，但無法對照核定金額與已建檔資料。';
+    box.style.display = 'none';
+    btnClearChecklistCase.disabled = true;
+    hint.textContent = '請先選擇要檢核的案件。';
     return;
   }
-
-  const latest = Array.isArray(c.auditChecks) && c.auditChecks.length ? c.auditChecks[0] : null;
   const approved = c.approvedAmount ? Number(c.approvedAmount).toLocaleString()+' 元' : '未登記';
-  selectedTitle.textContent = `${c.serial}｜${c.orgName||'未填單位'}`;
-  selectedMeta.textContent = `${c.activityName||'未填活動'}｜核定金額：${approved}`;
-  selectedBox.style.display = 'flex';
-  btnClearAuditCase.disabled = false;
-  hint.textContent = latest ? `最近檢查：${latest.checkedAtText||latest.checkedAt||'有紀錄'}` : '此案件尚無 AI 檢查紀錄。';
+  document.getElementById('checklistSelectedCaseTitle').textContent = `${c.serial}｜${c.orgName||'未填單位'}`;
+  document.getElementById('checklistSelectedCaseMeta').textContent = `${c.activityName||'未填活動'}｜核定金額：${approved}`;
+  box.style.display = 'flex';
+  btnClearChecklistCase.disabled = false;
+  const updatedAt = c.checklist && c.checklist.updatedAt;
+  hint.textContent = updatedAt ? `最近更新：${formatDateTime(updatedAt)}（勾選後自動儲存）` : '此案件尚未檢核過（勾選後自動儲存）。';
 }
 
-auditCaseSearchInput.addEventListener('input', ()=>{
-  if(auditCaseSerialInput.value) auditCaseSerialInput.value = '';
-  updateAuditCaseHint();
-  renderAuditCaseSuggestions();
+function renderChecklistBody(){
+  const card = document.getElementById('checklistCard');
+  const c = getChecklistCase();
+  if(!c){ card.style.display = 'none'; return; }
+  card.style.display = 'block';
+  const cl = ensureChecklist(c);
+  const st = checklistStats(c);
+
+  document.getElementById('checklistProgressTitle').textContent =
+    st.remaining === 0 ? '✅ 全部項目已確認，文件齊備' : `尚有 ${st.remaining} 項未確認`;
+  document.getElementById('checklistProgressText').textContent =
+    `已符合 ${st.ok} / ${st.required} 項` + (st.na ? `（不適用 ${st.na} 項）` : '');
+  document.getElementById('checklistBar').style.width = (st.required ? Math.round(st.ok / st.required * 100) : 100) + '%';
+
+  checklistBody.innerHTML = CHECKLIST_SECTIONS.map(sec=>{
+    const secOk = sec.items.filter(item=>cl.items[item.id]==='ok').length;
+    const secNa = sec.items.filter(item=>cl.items[item.id]==='na').length;
+    const rows = sec.items.map(item=>{
+      const state = cl.items[item.id] || '';
+      const cls = state==='ok' ? 'done' : (state==='na' ? 'na' : '');
+      const naBox = item.cond
+        ? `<label class="na-box"><input type="checkbox" data-id="${item.id}" data-kind="na" ${state==='na'?'checked':''}>不適用</label>`
+        : '';
+      return `<div class="checklist-item ${cls}">
+        <label class="item-main">
+          <input type="checkbox" data-id="${item.id}" data-kind="ok" ${state==='ok'?'checked':''}>
+          <span class="checklist-num">${item.id}</span>
+          <span>${escHtml(item.t)}${item.cond?'<span class="checklist-cond">條件式</span>':''}</span>
+        </label>
+        ${naBox}
+      </div>`;
+    }).join('');
+    return `<div class="checklist-section">
+      <div class="checklist-section-title"><span>${escHtml(sec.title)}</span><span class="checklist-section-count">${secOk}/${sec.items.length - secNa}</span></div>
+      ${rows}
+    </div>`;
+  }).join('');
+
+  if(document.activeElement !== checklistNotes) checklistNotes.value = cl.notes || '';
+}
+
+function saveChecklistState(c){
+  c.checklist.updatedAt = new Date().toISOString();
+  saveCases(cases);
+}
+
+checklistBody.addEventListener('change', e=>{
+  const input = e.target.closest('input[data-id]');
+  if(!input) return;
+  const c = getChecklistCase();
+  if(!c) return;
+  const cl = ensureChecklist(c);
+  if(input.checked) cl.items[input.dataset.id] = input.dataset.kind;
+  else delete cl.items[input.dataset.id];
+  saveChecklistState(c);
+  updateChecklistHeader();
+  renderChecklistBody();
 });
-auditCaseSearchInput.addEventListener('focus', renderAuditCaseSuggestions);
-auditCaseSearchInput.addEventListener('keydown', e=>{
-  if(e.key==='Escape'){
-    auditCaseSuggestions.innerHTML = '';
-    auditCaseSearchInput.blur();
+
+checklistNotes.addEventListener('change', ()=>{
+  const c = getChecklistCase();
+  if(!c) return;
+  ensureChecklist(c).notes = checklistNotes.value.trim();
+  saveChecklistState(c);
+  updateChecklistHeader();
+});
+
+checklistCaseSearchInput.addEventListener('input', ()=>{
+  if(checklistSerial){ checklistSerial = ''; updateChecklistHeader(); renderChecklistBody(); }
+  renderChecklistSuggestions();
+});
+checklistCaseSearchInput.addEventListener('focus', renderChecklistSuggestions);
+checklistCaseSearchInput.addEventListener('keydown', e=>{
+  if(e.key==='Escape'){ checklistCaseSuggestions.innerHTML = ''; checklistCaseSearchInput.blur(); }
+});
+btnClearChecklistCase.addEventListener('click', ()=>clearChecklistCase(true));
+btnChangeChecklistCase.addEventListener('click', ()=>clearChecklistCase(true));
+
+function missingChecklistItems(c){
+  const items = (c && c.checklist && c.checklist.items) || {};
+  const result = [];
+  CHECKLIST_SECTIONS.forEach(sec=>sec.items.forEach(item=>{
+    const state = items[item.id];
+    if(state !== 'ok' && state !== 'na') result.push({section:sec.title, id:item.id, text:item.t});
+  }));
+  return result;
+}
+
+document.getElementById('btnCopyChecklistNotice').addEventListener('click', async ()=>{
+  const c = getChecklistCase();
+  if(!c) return;
+  const missing = missingChecklistItems(c);
+  if(!missing.length){
+    setStatus('checklistStatus','目前沒有未確認的項目，不需要補件。','ok');
+    return;
   }
-});
-btnClearAuditCase.addEventListener('click', ()=>clearAuditCaseSelection(true));
-btnChangeAuditCase.addEventListener('click', ()=>clearAuditCaseSelection(true));
-document.addEventListener('click', e=>{
-  if(!e.target.closest('#auditCaseSuggestions') && e.target!==auditCaseSearchInput){
-    auditCaseSuggestions.innerHTML = '';
-  }
-});
-
-auditDropZone.addEventListener('click', ()=>{ if(!auditRunning) auditFileInput.click(); });
-auditDropZone.addEventListener('dragover', e=>{ e.preventDefault(); if(!auditRunning) auditDropZone.classList.add('drag'); });
-auditDropZone.addEventListener('dragleave', ()=>auditDropZone.classList.remove('drag'));
-auditDropZone.addEventListener('drop', e=>{
-  e.preventDefault(); auditDropZone.classList.remove('drag'); selectAuditFiles(e.dataTransfer.files);
-});
-auditFileInput.addEventListener('change', e=>{ selectAuditFiles(e.target.files); auditFileInput.value=''; });
-
-function selectAuditFiles(fileList){
-  if(auditRunning) return;
-  const files = Array.from(fileList||[]);
-  const allowed = ['application/pdf','image/jpeg','image/png'];
-  const invalid = files.find(file=>!allowed.includes(file.type) && !/\.(pdf|jpe?g|png)$/i.test(file.name));
-  if(invalid){ setStatus('auditStatus',`「${escapeHtml(invalid.name)}」不是支援的 PDF、JPG 或 PNG。`,'err'); return; }
-  if(files.length>10){ setStatus('auditStatus','一次最多只能選擇 10 件核銷文件。','err'); return; }
-  const total = files.reduce((sum,file)=>sum+file.size,0);
-  if(total>45*1024*1024){ setStatus('auditStatus','文件合計超過 45 MB，請分批檢查或先壓縮檔案。','err'); return; }
-  auditFiles = files;
-  setStatus('auditStatus','',null);
-  renderAuditFileList();
-  updateAuditControls();
-}
-
-function renderAuditFileList(){
-  const box = document.getElementById('auditFileList');
-  box.innerHTML = auditFiles.map((file,index)=>`<div class="audit-file-row">
-    <div class="audit-file-name">${escapeHtml(file.name)}</div>
-    <div class="audit-file-meta">${formatFileSize(file.size)} <button type="button" class="remove-btn audit-remove-file" data-index="${index}" title="移除">✕</button></div>
-  </div>`).join('');
-  box.querySelectorAll('.audit-remove-file').forEach(btn=>{
-    btn.addEventListener('click', ()=>{
-      auditFiles.splice(Number(btn.dataset.index),1);
-      renderAuditFileList(); updateAuditControls();
-    });
-  });
-}
-
-function updateAuditControls(){
-  btnRunAudit.disabled = auditRunning || !auditFiles.length;
-  btnClearAuditFiles.disabled = auditRunning || !auditFiles.length;
-  auditDropZone.classList.toggle('disabled', auditRunning);
-}
-
-btnClearAuditFiles.addEventListener('click', ()=>{
-  if(auditRunning) return;
-  auditFiles=[]; currentAuditResult=null; currentAuditCaseSerial='';
-  renderAuditFileList(); updateAuditControls();
-  document.getElementById('auditResultCard').style.display='none';
-  setStatus('auditStatus','',null); setStatus('auditSaveStatus','',null);
-});
-
-function fileToBase64Data(file){
-  return new Promise((resolve,reject)=>{
-    const reader = new FileReader();
-    reader.onload=()=>{
-      const result=String(reader.result||'');
-      const comma=result.indexOf(',');
-      if(comma<0) reject(new Error(`無法讀取「${file.name}」。`));
-      else resolve(result.slice(comma+1));
-    };
-    reader.onerror=()=>reject(new Error(`讀取「${file.name}」失敗。`));
-    reader.readAsDataURL(file);
-  });
-}
-
-function mimeForAuditFile(file){
-  if(file.type) return file.type;
-  if(/\.pdf$/i.test(file.name)) return 'application/pdf';
-  if(/\.png$/i.test(file.name)) return 'image/png';
-  return 'image/jpeg';
-}
-
-function buildAuditPrompt(c){
-  const approved = fmtMoney(c&&c.approvedAmount);
-  const expectedStamp = approved ? Math.floor(approved*0.004) : '';
-  const completePackage = document.getElementById('auditCompletePackage').checked;
-  const orgTypeValue = document.getElementById('auditOrgType').value;
-  const orgTypeText = ({unknown:'不確定，請由文件內容判斷',people:'一般人民團體',corporate:'社團法人團體',government:'政府機關或學校'})[orgTypeValue] || '不確定';
-  const caseText = c ? `
-【系統既有案件資料／核准資料對照基準】
-序號：${c.serial||''}
-申請單位：${c.orgName||''}
-統一編號：${c.taxId||''}
-活動名稱：${c.activityName||''}
-活動地點：${c.location||''}
-活動日期：${c.startDate||''} 至 ${c.endDate||''}
-核定補助金額：${c.approvedAmount||''}
-負責人：${c.responsible||''}
-通訊地址：${c.mailAddress||''}
-會址：${c.orgAddress||''}
-依核定金額試算銀錢收據印花：${expectedStamp!==''?expectedStamp+'元':'無法試算'}
-` : `
-【系統既有案件資料】未選擇案件，請只依附件互相比對；無法對照核准資料的項目標示「無法判斷」。
-`;
-  return `你是台灣電力公司南投區營業處睦鄰補助案件的核銷文件檢查助手。請逐頁閱讀所有附件，依「台電南投區處睦鄰補助案件檢核表」做完整初步審核，並只回傳符合 JSON Schema 的資料。
-
-【本次檢查設定】
-上傳範圍：${completePackage?'協會送來的完整核銷文件包；必要文件未出現時可列為「疑似缺少」':'僅上傳部分文件；未出現的文件不得直接判定缺失，應列「無法判斷」'}
-團體類型：${orgTypeText}
-${caseText}
-【判斷原則】
-1. 只能根據附件實際可見內容判斷，不可臆測。看不清楚、影像模糊、印章姓名無法辨認、未提供核准資料或規定需人工確認時，status 必須填「無法判斷」。
-2. 「通過」只可用於內容清楚可見且與對照資料一致；欄位空白、資料矛盾、必要章戳明顯缺少或金額計算錯誤才列「缺失」；條件式風險列「提醒」。
-3. 每個缺失、提醒與無法判斷都要寫來源檔名、頁碼或可辨識位置，以及實際看見的文字、數字或影像狀況。
-4. 不得只因文件名稱正確就判定通過，必須檢查實際填寫內容、章戳、日期、附件與計算。
-5. 國字大寫金額須換算後與阿拉伯數字及核定金額比對；日期需辨識民國年與西元年並統一理解。
-6. 同一事項在不同文件不一致時，列「缺失」或「提醒」，並清楚列出各文件的值。
-7. 若文件屬空白範本或大部分必要欄位未填，不可視為已完成文件。
-8. checks 陣列必須逐項涵蓋下列所有標準，不得任意省略或合併；即使無法判斷也要回傳一筆。
-
-【文件完整性清單 documentChecklist】
-請逐一判斷：
-1. 受捐助單位入戶申請書（必要）
-2. 存摺影本（必要）
-3. 領款收據（必要）
-4. 切結書（必要）
-5. 實際支用經費明細表（必要）
-6. 支出憑證黏存單及支用單據正本（必要）
-7. 成果報告（必要）
-8. 成果照片（必要）
-9. 會址變更公文函、扣繳憑單或扣繳單位設立登記申請書等會址證明（地址不同或立案證書無詳細地址時才必要）
-10. 法人登記證書（社團法人團體才必要）
-若本次設定為部分文件，未看到的文件 status 填「無法判斷」而非「疑似缺少」。
-
-【跨文件一致性 crossChecks】
-至少比對：申請／請款單位全名、統一編號、活動名稱、活動日期、活動地點、核定／請款金額、負責人姓名、會址、銀行戶名、銀行名稱／代碼／帳號、各文件日期、成果照片日期。每個欄位要列出核准或系統參考值，以及附件中看到的值。
-
-【逐項標準 checks —— 以下 1-30 項逐字依據台電南投區處睦鄰補助案件檢核表，是判定「缺失」的主要依據，請勿自行加嚴或加入檢核表沒有的要求】
-
-一、受捐助單位入戶申請書
-1. 申請單位、活動名稱、補助金額(大寫)與核准函一致。
-2. 銀行名稱、代碼、帳號、戶名已填妥，並與銀行存摺影本一致。
-3. 填寫單位名稱、負責人姓名，並蓋上單位圖記、負責人章。
-
-二、存摺影本
-4. 蓋單位圖記、負責人章於騎縫處。
-
-三、領款收據
-5. 活動名稱、補助金額(大寫)與核准函一致。
-6. 具領單位、銀行戶名、統編、地址、負責人、主辦會計、承辦人等資料與姓名已填妥。
-7. 會址如果和立案證書不同，請提供會址變更公文函或扣繳憑單或扣繳單位設立登記申請書等文件證明。
-8. 蓋負責人、主辦會計、承辦人印章、單位圖記章。
-9. 附上印花稅票(補助金額的千分之四)(請不要直接黏貼於文件上)。
-
-四、切結書
-10. 活動日期、名稱與核准函一致。
-11. 單位名稱、負責人、地址等資料已填妥。
-12. 蓋單位圖記章、負責人章。
-
-五、實際支用經費明細表
-13. 請款單位、活動名稱、請款總金額(大寫)與核准函一致。
-14. 應列出所有支用項目之數量、單位、單價、金額，且必須與所檢附之支用收據相同(如有差額請敘明原因)。
-15. 蓋承辦人、複核、會計、負責人章、單位圖記章。
-
-六、支出憑證黏存單
-16. 貼上本公司補助經費同額（或以上）之支用單據正本，並於騎縫處加蓋單位圖記或承辦人印章(支用單據指「統一發票」或「收據」)。
-17. 支用單據品名、數量、單價必須與實際支用經費明細表相符。
-18. 支用單據上要有日期(日期不晚於活動日期)。
-19. 支用單據之買受人，應為受補助對象，須正確書寫完整全名，不得塗改。
-20. 支用單據之金額欄應正確書寫，不得塗改。
-
-七、成果報告
-21. 請款單位、活動名稱、活動日期、地點與原核准文件一致。
-22. 填寫活動成果說明、活動照片張數。
-23. 蓋單位圖記章、負責人章。
-24. 若活動照片無法完整呈現參加人數，請提供說明(例如：活動照片因攝影角度、場地空間布局、人員流動等因素，無法完整呈現參加人數)。
-
-八、成果照片 photoReview
-25. 請檢附現場及進行中之彩色照片至少 4 張。
-26. 至少 1 張照片為現場布置有活動布條、背板或其他型式可清楚辨識「主辦單位、活動名稱、贊助單位：台灣電力公司」。
-27. 至少 1 張照片為現場懸掛宣導節能標語布條，且可清楚辨識「台灣電力公司 廣告」。
-28. 照片上之日期必須與活動日期相符，如照片上無法顯示日期者，請標註並加蓋承辦人印章(「每張」照片標註日期旁都要蓋章)。
-photoReview 要分別填寫照片張數、現場照片、贊助辨識、節能標語、日期與章、人數說明，不得只給總結。
-
-九、其他
-29. 若人民團體立案證書無會址所在地詳細地址，請提供會址變更公文函或扣繳單位設立登記申請書等文件並蓋上大小章。
-30. 社團法人團體請提供法人登記證書；非社團法人則標「不適用」。
-
-【延伸提醒項 checks（31 以後）—— 以下是系統為協助把關而延伸的檢查，檢核表原文沒有明文規定，status 最高只能填「提醒」或「無法判斷」，絕對不可判定為「缺失」，也不可寫成「違反規定」】
-31. 支用單據金額加總、經費來源合計、請款總金額三者是否合理一致（僅供參考核對，非檢核表明文規定）。
-32. 是否有疑似重複、相似或同一交易拆單的支用單據（僅提醒承辦人留意，非檢核表明文規定）。
-33. 銀行存摺影本上的銀行、分行、帳號、戶名是否可清楚辨識且與其他文件一致（僅為輔助核對，非檢核表明文規定）。
-
-【金額與印花 amountChecks／stampTax】
-至少列出：核定金額與入戶申請書、領款收據、明細表請款總額的比對；支用單據合計；印花應貼金額（補助金額千分之四）與可見實貼金額。無法辨識時不可填 0，應填「無法判斷」。
-
-【缺漏與補件文字】
-missingDocuments 只列確有依據的疑似缺少文件，並標註「必要」或「條件式」。uncertainty 列出影像不清、章戳需人工辨認、單據真偽、正本與否等 AI 無法可靠判斷事項。
-correctionNotice 只依據 1-30 項官方檢核表內容列出「缺失」、「提醒」及必要的人工確認事項，31-33 項延伸提醒可視情況簡短附註但不得用缺失語氣；文字要可直接貼給協會，語氣禮貌、具體、分點列出，不要提到 AI 或模型。若沒有明顯缺失，請寫「經初步檢查未發現明顯缺失，仍請依正式審核結果辦理。」
-
-【輸出長度要求】
-- checks 仍須完整回傳全部 33 項，但每一項文字應簡潔，避免重複規則原文。
-- finding、evidence、explanation、suggestion 各以 80 個中文字內為原則。
-- correctionNotice 以 1200 個中文字內為原則。
-- 只輸出 JSON，不要輸出推理過程、Markdown 或額外說明。`;
-}
-
-function parseGeminiJson(rawText){
-  const cleaned = String(rawText||'').trim().replace(/^```(?:json)?\s*/i,'').replace(/```\s*$/,'').trim();
-  try{ return JSON.parse(cleaned); }catch(e){
-    const first=cleaned.indexOf('{'), last=cleaned.lastIndexOf('}');
-    if(first>=0 && last>first) return JSON.parse(cleaned.slice(first,last+1));
-    throw e;
-  }
-}
-
-btnRunAudit.addEventListener('click', async ()=>{
-  const apiKey=getApiKey();
-  if(!apiKey){ setStatus('auditStatus','請先到「設定」頁輸入 Gemini API 金鑰。','err'); return; }
-  if(!auditFiles.length || auditRunning) return;
-
-  auditRunning=true; currentAuditResult=null; currentAuditCaseSerial=auditCaseSerialInput.value;
-  btnRunAudit.textContent='AI 檢查中…'; updateAuditControls();
-  document.getElementById('auditResultCard').style.display='none';
-  setStatus('auditSaveStatus','',null);
-
-  try{
-    const selectedCase=cases.find(c=>c.serial===currentAuditCaseSerial) || null;
-    const parts=[{text:buildAuditPrompt(selectedCase)}];
-    for(let i=0;i<auditFiles.length;i++){
-      const file=auditFiles[i];
-      setStatus('auditStatus',`正在讀取第 ${i+1}／${auditFiles.length} 件：${escapeHtml(file.name)}`,'info');
-      const data=await fileToBase64Data(file);
-      parts.push({text:`附件 ${i+1}，檔名：${file.name}`});
-      parts.push({inline_data:{mime_type:mimeForAuditFile(file),data}});
-    }
-
-    const requestBody={
-      contents:[{role:'user',parts}],
-      generationConfig:{
-        maxOutputTokens:32000,
-        thinkingConfig:{thinkingLevel:'LOW'},
-        responseMimeType:'application/json',
-        responseSchema:AUDIT_RESPONSE_SCHEMA
-      }
-    };
-
-    let responseData=null;
-    for(let attempt=1;attempt<=3;attempt++){
-      setStatus('auditStatus',attempt===1?'Gemini 正在逐頁檢查核銷文件…':`API 暫時忙碌，正在第 ${attempt} 次重試…`,'info');
-      let resp,data;
-      try{
-        resp=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent?key=${encodeURIComponent(apiKey)}`,{
-          method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(requestBody)
-        });
-        data=await resp.json();
-      }catch(networkErr){
-        if(attempt<3){ await sleep(attempt*3000); continue; }
-        throw new Error('網路連線失敗，請稍後再試。');
-      }
-      if(!resp.ok || data.error){
-        const status=resp.status;
-        const message=data?.error?.message || `API 錯誤（${status}）`;
-        if([429,500,502,503,504].includes(status) && attempt<3){ await sleep(attempt*4000); continue; }
-        throw new Error(message);
-      }
-      responseData=data; break;
-    }
-    let candidate=responseData?.candidates?.[0];
-    if(!candidate) throw new Error('沒有收到檢查結果，請確認 API 金鑰或稍後再試。');
-
-    // 完整檢核依台電官方檢核表整理為 33 項規則，Gemini 偶爾會因思考與 JSON 輸出過長而達到 token 上限。
-    // 遇到 MAX_TOKENS 時，自動改用極低思考量與較高輸出上限再執行一次，不必由使用者重新上傳。
-    if(candidate.finishReason==='MAX_TOKENS'){
-      setStatus('auditStatus','檢核項目較多，正在自動精簡結果並重試…','info');
-      const retryBody={
-        ...requestBody,
-        contents:[{
-          ...requestBody.contents[0],
-          parts:[
-            {
-              text:requestBody.contents[0].parts[0].text + `
-
-【輸出精簡要求】上一輪因輸出過長而中止。仍須完整回傳所有 33 項 checks，但每個 finding、evidence、explanation、suggestion 請各控制在 80 個中文字內；相同內容不要重複；correctionNotice 控制在 1200 個中文字內。只輸出 JSON。`
-            },
-            ...requestBody.contents[0].parts.slice(1)
-          ]
-        }],
-        generationConfig:{
-          ...requestBody.generationConfig,
-          maxOutputTokens:60000,
-          thinkingConfig:{thinkingLevel:'MINIMAL'}
-        }
-      };
-      const retryResp=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent?key=${encodeURIComponent(apiKey)}`,{
-        method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(retryBody)
-      });
-      const retryData=await retryResp.json();
-      if(!retryResp.ok || retryData.error){
-        throw new Error(retryData?.error?.message || `API 錯誤（${retryResp.status}）`);
-      }
-      responseData=retryData;
-      candidate=responseData?.candidates?.[0];
-      if(!candidate) throw new Error('重新檢查後仍未收到結果，請稍後再試。');
-    }
-
-    if(candidate.finishReason && candidate.finishReason!=='STOP'){
-      if(candidate.finishReason==='MAX_TOKENS'){
-        throw new Error('檢查結果仍超過輸出上限。請將文件分成兩批檢查，或只上傳一份整合後的 PDF 再試。');
-      }
-      throw new Error(`AI 回覆未完整結束（${candidate.finishReason}）。`);
-    }
-    const raw=(candidate.content?.parts||[]).map(part=>part.text||'').join('').trim();
-    if(!raw) throw new Error('AI 沒有回傳可解析的檢查內容。');
-    currentAuditResult=parseGeminiJson(raw);
-    renderAuditResult(currentAuditResult);
-    setStatus('auditStatus','AI 初步檢查完成，請逐項核對原始文件。','ok');
-  }catch(err){
-    console.error(err);
-    setStatus('auditStatus',`檢查失敗：${escapeHtml(err.message||'未知錯誤')}`,'err');
-  }finally{
-    auditRunning=false; btnRunAudit.textContent='✨ 開始 AI 檢查'; updateAuditControls();
-  }
-});
-
-function auditStatusClass(status){
-  if(status==='通過') return 'pass';
-  if(status==='提醒') return 'warn';
-  if(status==='缺失') return 'fail';
-  return 'unknown';
-}
-
-function renderAuditResult(data){
-  const checks=Array.isArray(data.checks)?data.checks:[];
-  const count=status=>checks.filter(item=>item.status===status).length;
-  document.getElementById('auditVerdict').textContent=data.verdict||'檢查完成';
-  document.getElementById('auditSummary').textContent=data.summary||'';
-  document.getElementById('auditPassCount').textContent=count('通過');
-  document.getElementById('auditWarnCount').textContent=count('提醒');
-  document.getElementById('auditFailCount').textContent=count('缺失');
-  document.getElementById('auditUnknownCount').textContent=count('無法判斷');
-
-  const docItems=Array.isArray(data.documentChecklist)?data.documentChecklist:[];
-  const docStatusClass=status=>{
-    if(status==='已提供' || status==='不適用') return 'pass';
-    if(status==='疑似缺少') return 'fail';
-    return 'unknown';
-  };
-  document.getElementById('auditDocumentChecklist').innerHTML=docItems.length?`<div style="overflow-x:auto;"><table>
-    <thead><tr><th>文件</th><th>需求</th><th>結果</th><th>辨識位置</th><th>判斷</th><th>建議</th></tr></thead>
-    <tbody>${docItems.map(item=>`<tr>
-      <td>${escHtml(item.documentName||'')}</td>
-      <td>${escHtml(item.requirement||'')}</td>
-      <td><span class="audit-status ${docStatusClass(item.status)}">${escHtml(item.status||'無法判斷')}</span></td>
-      <td>${escHtml(item.foundIn||'—')}</td>
-      <td>${escHtml(item.finding||'')}</td>
-      <td>${escHtml(item.suggestion||'')}</td>
-    </tr>`).join('')}</tbody>
-  </table></div>`:'<div class="audit-empty">AI 未回傳文件完整性清單。</div>';
-
-  const crossItems=Array.isArray(data.crossChecks)?data.crossChecks:[];
-  document.getElementById('auditCrossChecks').innerHTML=crossItems.length?`<div style="overflow-x:auto;"><table>
-    <thead><tr><th>比對欄位</th><th>核准／參考值</th><th>附件辨識值</th><th>結果</th><th>說明</th></tr></thead>
-    <tbody>${crossItems.map(item=>`<tr>
-      <td>${escHtml(item.field||'')}</td>
-      <td>${escHtml(item.referenceValue||'—')}</td>
-      <td>${escHtml(item.observedValues||'—')}</td>
-      <td><span class="audit-status ${auditStatusClass(item.status)}">${escHtml(item.status||'無法判斷')}</span></td>
-      <td>${escHtml(item.explanation||'')}</td>
-    </tr>`).join('')}</tbody>
-  </table></div>`:'<div class="audit-empty">沒有可顯示的跨文件比對結果。</div>';
-
-  const photo=data.photoReview||{};
-  const photoRows=[
-    ['照片張數',photo.photoCount,`至少 ${photo.minimumRequired||'4 張'}`],
-    ['現場及進行中照片',photo.eventScenePhotos,'應包含現場及活動進行中照片'],
-    ['主辦／活動／贊助單位辨識',photo.sponsorIdentification,'至少一張可辨識主辦單位、活動名稱、贊助單位：台灣電力公司'],
-    ['節能宣導布條',photo.energySavingBanner,'至少一張可辨識節能標語及「台灣電力公司 廣告」'],
-    ['日期與承辦人章',photo.dateAndStamp,'每張日期須與活動日相符；無日期時逐張標註並蓋承辦人章'],
-    ['參加人數說明',photo.participantCountExplanation,'照片無法完整呈現人數時應附說明']
+  const lines = [
+    '【睦鄰補助核銷文件補件通知】',
+    `協會：${c.orgName||''}（序號 ${c.serial}）`,
+    `活動：${c.activityName||''}`,
+    '經檢核，下列項目尚未符合規定，請協助補正後再送件：',
+    ''
   ];
-  document.getElementById('auditPhotoReview').innerHTML=Object.keys(photo).length?`<div style="overflow-x:auto;"><table>
-    <thead><tr><th>項目</th><th>辨識結果</th><th>檢核標準</th></tr></thead>
-    <tbody>${photoRows.map(row=>`<tr><td>${escHtml(row[0])}</td><td>${escHtml(row[1]||'無法判斷')}</td><td>${escHtml(row[2])}</td></tr>`).join('')}</tbody>
-  </table></div><div class="status-msg ${photo.status==='缺失'?'err':(photo.status==='通過'?'ok':'info')}" style="margin-top:8px;"><b>${escHtml(photo.status||'無法判斷')}</b>：${escHtml(photo.explanation||'')}</div>`:'<div class="audit-empty">沒有可顯示的成果照片檢查結果。</div>';
-
-  const tbody=document.getElementById('auditChecksBody');
-  tbody.innerHTML=checks.length?checks.map(item=>`<tr>
-    <td><span class="audit-status ${auditStatusClass(item.status)}">${escHtml(item.status||'無法判斷')}</span></td>
-    <td>${escHtml(item.category||'')}</td>
-    <td>${escHtml(item.item||'')}</td>
-    <td>${escHtml(item.finding||'')}<div class="audit-evidence">${escHtml([item.sourceFile,item.page,item.evidence].filter(Boolean).join('｜')||'未提供依據')}</div></td>
-    <td>${escHtml(item.suggestion||'')}</td>
-  </tr>`).join(''):'<tr><td colspan="5" class="hint" style="padding:14px;">AI 未回傳逐項檢查資料。</td></tr>';
-
-  const amountItems=Array.isArray(data.amountChecks)?data.amountChecks:[];
-  const stamp=data.stampTax||{};
-  const amountRows=[...amountItems];
-  if(Object.keys(stamp).length){
-    amountRows.push({item:'領款收據印花',expected:stamp.expectedStamp,found:stamp.observedStamp,status:stamp.status,explanation:stamp.explanation});
+  let lastSection = '';
+  let n = 0;
+  missing.forEach(item=>{
+    if(item.section !== lastSection){
+      lines.push(`■ ${item.section}`);
+      lastSection = item.section;
+    }
+    lines.push(`${++n}. ${item.text}`);
+  });
+  const notes = checklistNotes.value.trim();
+  if(notes){ lines.push('', '其他說明：', notes); }
+  lines.push('', '謝謝您的配合。');
+  try{
+    await copyTextToClipboard(lines.join('\n'));
+    setStatus('checklistStatus',`已複製補件清單（共 ${missing.length} 項）。`,'ok');
+  }catch(err){
+    setStatus('checklistStatus','無法自動複製，請改用瀏覽器重新整理後再試。','err');
   }
-  document.getElementById('auditAmountChecks').innerHTML=amountRows.length?`<div style="overflow-x:auto;"><table>
-    <thead><tr><th>項目</th><th>應有／對照值</th><th>文件辨識值</th><th>結果</th><th>說明</th></tr></thead>
-    <tbody>${amountRows.map(item=>`<tr><td>${escHtml(item.item||'')}</td><td>${escHtml(item.expected||'—')}</td><td>${escHtml(item.found||'—')}</td><td><span class="audit-status ${auditStatusClass(item.status)}">${escHtml(item.status||'無法判斷')}</span></td><td>${escHtml(item.explanation||'')}</td></tr>`).join('')}</tbody>
-  </table></div>`:'<div class="audit-empty">沒有可比對的金額資料。</div>';
-
-  const missing=Array.isArray(data.missingDocuments)?data.missingDocuments:[];
-  document.getElementById('auditMissingDocs').innerHTML=missing.length?`<ul class="audit-list">${missing.map(x=>`<li>${escHtml(x)}</li>`).join('')}</ul>`:'<div class="audit-empty">未發現明確缺漏文件；仍請依案件類型人工確認。</div>';
-  const uncertainty=Array.isArray(data.uncertainty)?data.uncertainty:[];
-  document.getElementById('auditUncertainty').innerHTML=uncertainty.length?`<ul class="audit-list">${uncertainty.map(x=>`<li>${escHtml(x)}</li>`).join('')}</ul>`:'<div class="audit-empty">沒有另外列出的待確認事項。</div>';
-  document.getElementById('auditCorrectionNotice').value=data.correctionNotice||'';
-  document.getElementById('auditResultCard').style.display='block';
-  document.getElementById('auditResultCard').scrollIntoView({behavior:'smooth',block:'start'});
-}
+});
 
 async function copyTextToClipboard(text){
   if(navigator.clipboard && window.isSecureContext){ await navigator.clipboard.writeText(text); return; }
-  const ta=document.createElement('textarea'); ta.value=text; document.body.appendChild(ta); ta.select(); document.execCommand('copy'); ta.remove();
+  const ta = document.createElement('textarea');
+  ta.value = text; document.body.appendChild(ta); ta.select();
+  const okCopy = document.execCommand('copy');
+  ta.remove();
+  if(!okCopy) throw new Error('copy failed');
 }
 
-document.getElementById('btnCopyAuditNotice').addEventListener('click', async ()=>{
-  const text=document.getElementById('auditCorrectionNotice').value.trim();
-  if(!text){ setStatus('auditSaveStatus','目前沒有可複製的補件文字。','err'); return; }
-  try{ await copyTextToClipboard(text); setStatus('auditSaveStatus','補件文字已複製。','ok'); }
-  catch(e){ setStatus('auditSaveStatus','無法自動複製，請手動選取文字。','err'); }
+document.getElementById('btnWriteChecklistNotes').addEventListener('click', ()=>{
+  const c = getChecklistCase();
+  if(!c) return;
+  const missing = missingChecklistItems(c);
+  const userNotes = checklistNotes.value.trim();
+  const summary = missing.length
+    ? `未符合 ${missing.length} 項：` + missing.map(item=>`${item.section}-${item.text}`).join('；')
+    : '檢核表全部項目已確認。';
+  const note = `[核銷檢核 ${localDateTimeText()}] ${summary}${userNotes ? '\n備註：' + userNotes : ''}`;
+  c.settlement = c.settlement || {};
+  c.settlement.notes = [c.settlement.notes || '', note].filter(Boolean).join('\n\n');
+  if(!c.settlement.status && missing.length) c.settlement.status = '補件中';
+  saveCases(cases);
+  renderSettleTable();
+  setStatus('checklistStatus', missing.length
+    ? '已寫入核銷備註，並將這件加入核銷清單（狀態為「補件中」）。'
+    : '已寫入核銷備註，並將這件加入核銷清單。','ok');
 });
 
-function getCurrentAuditCase(){ return cases.find(c=>c.serial===currentAuditCaseSerial); }
-
-document.getElementById('btnSaveAuditRecord').addEventListener('click', ()=>{
-  if(!currentAuditResult){ setStatus('auditSaveStatus','請先完成 AI 檢查。','err'); return; }
-  const c=getCurrentAuditCase();
-  if(!c){ setStatus('auditSaveStatus','這次檢查未綁定案件，無法儲存紀錄。','err'); return; }
-  c.auditChecks=Array.isArray(c.auditChecks)?c.auditChecks:[];
-  const record={
-    checkedAt:new Date().toISOString(), checkedAtText:localDateTimeText(),
-    files:auditFiles.map(file=>({name:file.name,size:file.size,type:mimeForAuditFile(file)})),
-    result:currentAuditResult
-  };
-  const duplicate=c.auditChecks[0] && c.auditChecks[0].checkedAtText===record.checkedAtText;
-  if(!duplicate) c.auditChecks.unshift(record);
-  saveCases(cases); updateAuditCaseHint();
-  setStatus('auditSaveStatus','已將檢查結果儲存在這筆案件中。','ok');
-});
-
-document.getElementById('btnWriteAuditNotes').addEventListener('click', ()=>{
-  if(!currentAuditResult){ setStatus('auditSaveStatus','請先完成 AI 檢查。','err'); return; }
-  const c=getCurrentAuditCase();
-  if(!c){ setStatus('auditSaveStatus','請先選擇對應案件，才能寫入核銷備註。','err'); return; }
-  c.settlement=c.settlement||{};
-  const notice=document.getElementById('auditCorrectionNotice').value.trim();
-  const note=`[AI核銷初檢 ${localDateTimeText()}]\n${currentAuditResult.summary||''}${notice?'\n'+notice:''}`.trim();
-  c.settlement.notes=[c.settlement.notes||'',note].filter(Boolean).join('\n\n');
-  if(!c.settlement.status && (currentAuditResult.verdict==='需要補件' || currentAuditResult.verdict==='疑似重大問題')) c.settlement.status='補件中';
-  saveCases(cases); renderSettleTable();
-  setStatus('auditSaveStatus','已寫入核銷備註；若判定需要補件，狀態也會自動設為「補件中」。','ok');
+document.getElementById('btnResetChecklist').addEventListener('click', ()=>{
+  const c = getChecklistCase();
+  if(!c) return;
+  if(!confirm('確定要清除這件案件的全部勾選嗎？備註文字會保留。')) return;
+  ensureChecklist(c).items = {};
+  saveChecklistState(c);
+  updateChecklistHeader();
+  renderChecklistBody();
+  setStatus('checklistStatus','已清除全部勾選。','ok');
 });
 
 // ---------- 總覽 Tab ----------
@@ -2425,7 +2021,7 @@ document.getElementById('importInput').addEventListener('change', e=>{
         cases = imported;
         saveCases(cases, {skipSnapshot:true, skipDirty:true});
         markBackedUp();
-        renderOverview(); renderRecordsTable(); renderSettleTable(); renderAuditCaseOptions();
+        renderOverview(); renderRecordsTable(); renderSettleTable(); renderChecklistCase();
         document.getElementById('settingsCount').textContent = cases.length;
         e.target.value = '';
         alert('已還原備份');
@@ -2519,7 +2115,7 @@ document.getElementById('btnRestoreSnapshot').addEventListener('click', ()=>{
     createSafetySnapshot('還原舊快照前', cases);
     cases = snapshot.cases;
     saveCases(cases, {skipSnapshot:true});
-    renderOverview(); renderRecordsTable(); renderSettleTable(); renderAuditCaseOptions();
+    renderOverview(); renderRecordsTable(); renderSettleTable(); renderChecklistCase();
     document.getElementById('settingsCount').textContent = cases.length;
     setStatus('backupActionStatus','已還原安全快照；目前狀態尚未下載成 JSON，請再執行備份。','ok');
   }
@@ -2554,7 +2150,7 @@ document.getElementById('btnWipeAll').addEventListener('click', ()=>{
     backupMeta.dirty = false;
     backupMeta.changeCount = 0;
     persistBackupMeta();
-    renderOverview(); renderRecordsTable(); renderSettleTable(); renderAuditCaseOptions();
+    renderOverview(); renderRecordsTable(); renderSettleTable(); renderChecklistCase();
     document.getElementById('settingsCount').textContent = 0;
     updateBackupUI();
     alert('已清空。需要時可在設定頁還原最近安全快照。');
@@ -2563,7 +2159,7 @@ document.getElementById('btnWipeAll').addEventListener('click', ()=>{
 
 // init
 clearForm();
-renderAuditCaseOptions();
+renderChecklistCase();
 document.getElementById('settingsCount').textContent = cases.length;
 updateBackupUI();
 </script>
