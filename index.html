@@ -162,6 +162,23 @@
   table.settle-table select.status-select option[value="結案"]{color:var(--ok);}
   table.settle-table select.status-select option[value="退件"]{color:var(--warn);}
 
+
+  #settleTable{table-layout:fixed; min-width:900px;}
+  #settleTable th:nth-child(1){width:68px;}
+  #settleTable th:nth-child(2){width:150px;}
+  #settleTable th:nth-child(3){width:78px;}
+  #settleTable th:nth-child(4){width:64px;}
+  #settleTable th:nth-child(5){width:150px;}
+  #settleTable th:nth-child(6){width:88px;}
+  #settleTable th:nth-child(7){width:86px;}
+  #settleTable th:nth-child(8){width:86px;}
+  #settleTable th:nth-child(9), #settleTable th:nth-child(10), #settleTable th:nth-child(11){width:54px;}
+  #settleTable th:nth-child(13){width:34px;}
+  #settleTable td{overflow:hidden; text-overflow:ellipsis;}
+  #settleTable td.org-cell{max-width:none; white-space:normal; overflow-wrap:break-word; word-break:break-word; line-height:1.35;}
+  #settleTable td.readonly-cell{white-space:nowrap;}
+  #settleTable select{padding-left:2px; padding-right:2px;}
+
   #recordsTable{table-layout:fixed;}
   #recordsTable td{white-space:normal; overflow-wrap:break-word; word-break:break-word; vertical-align:top; line-height:1.35; padding:5px 6px;}
   #recordsTable th{white-space:normal; word-break:break-word;}
@@ -448,7 +465,7 @@
       </div>
       <div class="divider"></div>
       <div style="overflow-x:auto;">
-        <table class="settle-table">
+        <table class="settle-table" id="settleTable">
           <thead><tr>
             <th>序號</th><th>申請單位</th><th>核定金額</th><th>印花</th><th>報銷單號</th>
             <th>狀態</th><th>過帳日期</th><th>核銷金額</th>
@@ -1223,15 +1240,20 @@ function renderSettleTable(){
     const statusOptions = ['','審核中','補件中','結案','退件'].map(opt=>
       `<option value="${opt}" ${s.status===opt?'selected':''}>${opt||'請選擇'}</option>`
     ).join('');
+    const stampList = ['','有','無'];
+    if(s.stamp && !stampList.includes(s.stamp)) stampList.push(s.stamp);
+    const stampOptions = stampList.map(opt=>
+      `<option value="${escAttr(opt)}" ${(s.stamp||'')===opt?'selected':''}>${escHtml(opt||'請選擇')}</option>`
+    ).join('');
     return `<tr class="${rc}" data-serial="${escAttr(c.serial)}">
       <td class="readonly-cell">${escHtml(c.serial)}</td>
       <td class="org-cell">${escHtml(c.orgName)}</td>
       <td class="readonly-cell">${c.approvedAmount?Number(c.approvedAmount).toLocaleString():'—'}</td>
-      <td><input type="text" data-field="stamp" value="${escAttr(s.stamp||'')}"></td>
+      <td><select data-field="stamp">${stampOptions}</select></td>
       <td><input type="text" data-field="receiptNo" value="${escAttr(s.receiptNo||'')}"></td>
       <td><select data-field="status" class="status-select">${statusOptions}</select></td>
       <td><input type="text" data-field="postDate" value="${escAttr(s.postDate||'')}" placeholder="115/3/30"></td>
-      <td><input type="number" data-field="settleAmount" value="${escAttr(s.settleAmount||'')}"></td>
+      <td><input type="number" data-field="settleAmount" min="0" max="999999" step="1" inputmode="numeric" value="${escAttr(s.settleAmount||'')}"></td>
       <td><input type="checkbox" data-field="cgssSettle" ${s.cgssSettle?'checked':''}></td>
       <td><input type="checkbox" data-field="incomeTax" ${s.incomeTax?'checked':''}></td>
       <td><input type="checkbox" data-field="neighborSettle" ${s.neighborSettle?'checked':''}></td>
@@ -1253,9 +1275,20 @@ document.getElementById('settleTableBody').addEventListener('click', e=>{
   }
 });
 
+function limitSettleAmountDigits(input){
+  const digits = String(input.value || '').replace(/\D/g,'').slice(0,6);
+  if(input.value !== digits) input.value = digits;
+  return digits;
+}
+
+document.getElementById('settleTableBody').addEventListener('input', e=>{
+  if(e.target.dataset.field === 'settleAmount') limitSettleAmountDigits(e.target);
+});
+
 document.getElementById('settleTableBody').addEventListener('change', e=>{
   const field = e.target.dataset.field;
   if(!field) return;
+  if(field === 'settleAmount') limitSettleAmountDigits(e.target);
   const tr = e.target.closest('tr');
   const serial = tr.dataset.serial;
   const idx = cases.findIndex(c=>c.serial===serial);
